@@ -22,7 +22,7 @@
 #define AUDIO_BT  2
 #define AUDIO_ALARM 3
 
-#define AUDIO_MAX_SOURCE 3
+#define AUDIO_MAX_SOURCE 4
 
 void audioInit(void);
 void audioOn(int source, uint32_t samplerate);
