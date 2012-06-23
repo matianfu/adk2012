@@ -325,6 +325,82 @@ static void adkBtSspF(const uint8_t* mac, uint32_t val){
   dbgPrintf("ssp with val %u\n", val);
 }
 
+#define PI_SCALE	400	//200 units = pi
+
+static long fpmul(long a, long b){
+
+    int64_t aa = a, bb = b;
+
+    aa *= bb;
+    aa >>= 22;
+
+    return aa;
+}
+
+static int isin_ser(int i){	//0-pi/2 only
+
+    //x - x^3 /6 + x^5 / 120 - x^7 / 5040
+    long x;
+    long x_2, x_3, x_5, x_7;
+
+
+    //convert to 10.22 fixed point and 0..pi/2 range
+    x = (13176794LL /* pi */ * (int64_t)i + PI_SCALE ) / (PI_SCALE * 2);
+
+    //calculate x^2
+    x_2 = fpmul(x, x);
+
+
+    //calculate x^3, x^5, x^7
+    x_3 = fpmul(x, x_2);
+    x_5 = fpmul(x_3, x_2);
+    x_7 = fpmul(x_5, x_2);
+
+
+    //calculate sin
+    x = x - (x_3 + 3) / 6 + (x_5 + 60) / 120 - (x_7 + 2520) / 5040;
+
+
+    //desired result is 10-bit fp, so scale it back
+    x >>= 12;
+
+
+    return x;
+}
+
+
+
+static int isin(int i){
+
+    char neg = 0;
+
+    if(i < 0){
+
+        i = -i;
+        neg ^= 1;
+    }
+    i %= PI_SCALE * 2;
+    if(i >= PI_SCALE){
+
+        i -= PI_SCALE;
+        neg ^= 1;
+    }
+    if(i > PI_SCALE / 2){
+
+        i = PI_SCALE - i;
+    }
+
+    i = isin_ser(i);
+    if(neg) i = -i;
+
+    return i;
+}
+
+static int icos(int v){
+
+    return isin(v + PI_SCALE / 2);
+}
+
 static void loop(void)
 {
   uint8_t r, g, b, dimR, dimG, dimB;
@@ -780,9 +856,9 @@ static void loop(void)
 
             switch(settings.displayMode){
 
-              case AdkShowAnimation:
+              case AdkShowAnimation:{
 
-                if(rnd() < 30){  //spawn
+                /*if(rnd() < 30){  //spawn
           
                     i = rnd() % NUM_LEDS;
                     gethue(rnd(), vals[i] + 0, vals[i] + 1, vals[i] + 2);
@@ -791,8 +867,77 @@ static void loop(void)
                   for(j = 0; j < 3; j++) vals[i][j] = ((uint32_t)vals[i][j] * 127) >> 7;
                   for(j = 0; j < sizeof(doNotTouch) && i != doNotTouch[j]; j++);
                   if(j == sizeof(doNotTouch)) ADK_ledWrite(i, vals[i][0], vals[i][1], vals[i][2]);
-                }
-                break;
+                }*/
+		static const uint16_t coord_x[] =	{
+								0,0,406,434,318,460,549,346,259,204,176, 28, 57,116,230,
+								57,0,0,549,523,523,549,582,582,549,259,232,232,259,293,
+								293,259,0,0,466,435,435,466,494,494,466,149,114,116,149,
+								178,178,149,0,0,349,318,318,349,378,378,349, 59, 28, 28,
+								57, 89, 89, 59
+							};
+		static const uint16_t coord_y[] =	{
+								0,0, 92,221,219,194,194,253,194, 92,287,282,194,222,283,
+								313,0,0, 87, 60,117,149,117, 60, 30, 87, 60,117,149,117,
+								60, 30,0,0, 87, 60,117,149,117, 60,30, 87, 60,117,149,117,
+								60, 30,0,0, 87, 60,117,149,117, 60, 30, 87, 60,117,149,117,
+								60, 30
+							};
+
+		static long posX = 0, posY = 0;
+		static int speedX = 16, speedY = 8;
+		static int accelX = 0, accelY = 0;
+		static signed char sizeX = 0, sizeY = 0;
+
+		if(!rnd()) accelX += (rnd() & 2) - 1;
+                if(!rnd()) accelY += (rnd() & 2) - 1;
+                
+		if(!(rnd() & 0x1F) && sizeX <  0x7F) sizeX++;
+                if(!(rnd() & 0x1F) && sizeX > -0x7F) sizeX--;
+		if(!(rnd() & 0x1F) && sizeY <  0x7F) sizeY++;
+                if(!(rnd() & 0x1F) && sizeY > -0x7F) sizeY--;
+                
+		if(!(rnd() & 0x3F)) speedX += accelX;
+		if(speedX > 32 || speedX < -32){
+
+			accelX = -accelX;
+			speedX += 2 * accelX;
+		}
+		if(!(rnd() & 0x3F)) speedY += accelY;
+		if(speedY > 32 || speedY < -32){
+
+			accelY = -accelY;
+			speedY += 2 * accelY;
+		}
+
+		posX += speedX;
+		posY += speedY;
+
+                for(i = 0; i < sizeof(coord_x) / sizeof(*coord_x); i++) if(coord_x[i]){
+
+			uint8_t cr, cg, cb, val;
+
+			val = 128 + ((isin((long)coord_y[i] * (8 + sizeX / 42) / 8 + posX / 16) * icos((long)coord_x[i] * (8 + sizeY / 42) / 8 - posY / 16)) >> 12);	//now in 8-bit unsigned range
+
+			gethue(val, &cr, &cg, &cb);
+
+			//dim the neutral areas a little bit
+			if(val < 128 + 32 && val > 128 - 32){
+
+				val -= 128;
+				if(val & 0x80) val = -val;
+				//now val is 0..32  where 0 is closest to 128
+				val >>= 3;
+				//now val is 0..3   where 0 is closest to 128
+				val = 5 - val;
+				//now val is 2..5   where 5 is closest to 128
+				cr = ((long)cr * 2L + val / 2) / val;
+				cg = ((long)cg * 2L + val / 2) / val;
+				cb = ((long)cb * 2L + val / 2) / val;
+			}
+
+			ADK_ledWrite(i, cr, cg, cb);
+		}
+                }break;
 
               case AdkShowAccel:
 
