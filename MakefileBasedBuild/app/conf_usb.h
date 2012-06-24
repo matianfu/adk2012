@@ -42,8 +42,5 @@
 #define ASSERT(x) do { if (!(x)) { dbgPrintf("%s:%d ASSERT failed: %s\n", __FILE__, __LINE__, #x); halt(); } } while (0)
 #define panic(fmt, ...) do{ dbgPrintf("panic at %s: " fmt, __func__, ##__VA_ARGS__); halt(); } while (0)
 
-#undef printf
-#define printf(x...) ERROR_DONT_USE_PRINTF
-
 #endif
 
