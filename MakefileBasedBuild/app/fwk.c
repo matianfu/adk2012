@@ -191,6 +191,10 @@ void fwkInit(void){
     PMC_EnablePeripheral(ID_PIOB);
     PMC_EnablePeripheral(ID_PIOA);
 
+    //configure the debug UART
+    gpioSetFun(PORTA(8), GPIO_FUNC_A);
+    gpioSetFun(PORTA(9), GPIO_FUNC_A);
+
     //dma setup
     PMC_EnablePeripheral(ID_DMAC);
     DMAC->DMAC_EBCIDR = 0x003F3F3F;	//disable all interrupts
