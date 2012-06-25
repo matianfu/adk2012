@@ -23,7 +23,7 @@
 
 #if TRACE_USB
 #define LOG_STR(...)                    (dbgPrintf(__VA_ARGS__),dbgPrintf("\n\r"))
-#define TRACE_OTG(fmt, ...)                  do{ dbgPrintf("%s %ld: " fmt, __func__, fwkGetUptime(), ##__VA_ARGS__); } while (0)
+#define TRACE_OTG(fmt, ...)                  do{ dbgPrintf("%s %ld: " fmt, __func__, (uint32_t)fwkGetUptime(), ##__VA_ARGS__); } while (0)
 #define TRACE_OTG_NONL(fmt, ...)                  do{ dbgPrintf(fmt, ##__VA_ARGS__); } while (0)
 #else
 #define LOG_STR(...)                    ()
