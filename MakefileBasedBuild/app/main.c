@@ -806,8 +806,8 @@ static void loop(void)
         ADK_ledWrite(2, 0, 0, 0);
        
         slider = ADK_capSenseSlider();
+        slider = ((((uint32_t)slider) * 191) >> 8) + 64;
         if(slider != briSlider){
-          slider = ((((uint32_t)slider) * 191) >> 8) + 64;
           briSlider = slider;
           settings.bri = slider;
         }
