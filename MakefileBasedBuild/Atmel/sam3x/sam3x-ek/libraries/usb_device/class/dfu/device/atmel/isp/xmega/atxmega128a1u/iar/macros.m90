@@ -1,0 +1,180 @@
+;----------------------------------------------------------------------------
+;               			
+;		    MACROS.M90					
+;
+;	This module contains the A90/AVR C macros				
+;	used by cstartup.s90 and other assemble source.
+;
+;   File version:   $Revision: 1.8 $
+;								 	
+;								 	
+;----------------------------------------------------------------------------
+
+#if (((__TID__ >> 8) & 0x7F) != 90)
+#error This file should only be assembled by aa90 or aavr
+#endif
+
+#define A90_PROC_OPTION		((__TID__ >> 4) & 0x0F)
+
+/* Long or relative jumps and calls */
+#if (A90_PROC_OPTION == 0) || (A90_PROC_OPTION == 1)
+#define XCALL	RCALL
+#define XJMP	RJMP
+#else
+#define XCALL	CALL
+#define XJMP	JMP
+#endif
+
+/* Length of pointer registers (X/Y/Z) */
+#if (A90_PROC_OPTION == 0) || (A90_PROC_OPTION == 2)
+#define A90_POINTER_REG_SIZE	1
+#define A90_TINY_INDEX
+#else /*!(A90_PROC_OPTION == 0) || (A90_PROC_OPTION == 2)*/
+#if (A90_PROC_OPTION == 1) || (A90_PROC_OPTION == 3) || (A90_PROC_OPTION ==5)
+#define A90_POINTER_REG_SIZE	2
+#else /*!(A90_PROC_OPTION == 1) || (A90_PROC_OPTION == 3) || (A90_PROC_OPTION ==5)*/
+#if (A90_PROC_OPTION == 4) || (A90_PROC_OPTION == 6)
+#define A90_POINTER_REG_SIZE	3
+#define A90_EXTENDED_DATA
+#else /*!(A90_PROC_OPTION == 4) || (A90_PROC_OPTION == 6)*/
+#error Unknown processor option!!
+#endif /*!(A90_PROC_OPTION == 4) || (A90_PROC_OPTION == 6)*/
+#endif /*!(A90_PROC_OPTION == 1) || (A90_PROC_OPTION == 3) || (A90_PROC_OPTION ==5)*/
+#endif /*!(A90_PROC_OPTION == 0) || (A90_PROC_OPTION == 2)*/
+
+#if (A90_PROC_OPTION > 4)
+#define A90_LARGE_CODE
+#endif
+
+#if (A90_PROC_OPTION > 1)
+#define A90_HAS_POSSIBLE_ELPM
+#endif
+
+#ifdef A90_HAS_POSSIBLE_ELPM
+#ifdef __HAS_ELPM__
+#define A90_HAS_ELPM
+#else
+#ifndef SMALL_FLASH
+#define A90_HAS_ELPM
+#endif
+#endif
+#endif
+
+#if A90_PROC_OPTION > 1
+#define A90_24BIT_GENERIC
+#endif
+
+#if A90_PROC_OPTION < 2
+#define A90_16BIT_GENERIC
+#endif
+
+#ifdef __MEMORY_MODEL__
+
+#define TINY_MEMORY_MODEL 0
+#define SMALL_MEMORY_MODEL 1
+#define LARGE_MEMORY_MODEL 2
+#define GENERIC_MEMORY_MODEL 3
+#define HUGE_MEMORY_MODEL 4
+
+#if __MEMORY_MODEL__ == 1
+#undef MEMORY_MODEL
+#define MEMORY_MODEL TINY_MEMORY_MODEL
+#endif
+
+#if __MEMORY_MODEL__ == 2
+#undef MEMORY_MODEL
+#define MEMORY_MODEL SMALL_MEMORY_MODEL
+#endif
+
+#if __MEMORY_MODEL__ == 3
+#undef MEMORY_MODEL
+#define MEMORY_MODEL LARGE_MEMORY_MODEL
+#endif
+
+#if __MEMORY_MODEL__ == 4
+#undef MEMORY_MODEL
+#define MEMORY_MODEL GENERIC_MEMORY_MODEL
+#endif
+
+#if __MEMORY_MODEL__ == 5
+#undef MEMORY_MODEL
+#define MEMORY_MODEL HUGE_MEMORY_MODEL
+#endif
+
+#else
+
+#ifdef MEMORY_MODEL
+#define t 0
+#define s 1
+#define l 2
+#define g 3
+#define h 4
+
+#define TINY_MEMORY_MODEL 0
+#define SMALL_MEMORY_MODEL 1
+#define LARGE_MEMORY_MODEL 2
+#define GENERIC_MEMORY_MODEL 3
+#define HUGE_MEMORY_MODEL 4
+
+#if MEMORY_MODEL == t
+#undef MEMORY_MODEL
+#define MEMORY_MODEL TINY_MEMORY_MODEL
+#endif
+
+#if MEMORY_MODEL == s
+#undef MEMORY_MODEL
+#define MEMORY_MODEL SMALL_MEMORY_MODEL
+#endif
+
+#if MEMORY_MODEL == l
+#undef MEMORY_MODEL
+#define MEMORY_MODEL LARGE_MEMORY_MODEL
+#endif
+
+#if MEMORY_MODEL == g
+#undef MEMORY_MODEL
+#define MEMORY_MODEL GENERIC_MEMORY_MODEL
+#endif
+
+#if MEMORY_MODEL == h
+#undef MEMORY_MODEL
+#define MEMORY_MODEL HUGE_MEMORY_MODEL
+#endif
+
+#undef t
+#undef s
+#undef l
+#undef g
+#undef h
+#endif
+#endif
+
+/* Register nicknames */
+#define T0 R0
+#define T1 R1
+#define T2 R2
+#define T3 R3
+#define P0 R16
+#define P1 R17
+#define P2 R18
+#define P3 R19
+#define Q0 R20
+#define Q1 R21
+#define Q2 R22
+#define Q3 R23
+#define X0 R26
+#define X1 R27
+#define X2 R25
+#define Y0 R28
+#define Y1 R29
+#define Z0 R30
+#define Z1 R31
+#define Z2 R19
+
+/* I/O-Space Register nicknames */
+#define RAMPD 0x38
+#define RAMPX 0x39
+#define RAMPY 0x3A
+#define RAMPZ 0x3B
+#define EIND  0x3C
+#define SREG  0x3F

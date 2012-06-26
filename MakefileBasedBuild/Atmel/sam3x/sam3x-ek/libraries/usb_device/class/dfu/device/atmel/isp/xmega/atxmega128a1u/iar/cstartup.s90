@@ -1,0 +1,195 @@
+;----------------------------------------------------------------------------
+;
+;   This module contains the AVR C and EC++ startup
+;
+;   File version:   $Revision: 6648 $
+;
+;----------------------------------------------------------------------------
+
+
+#include "macros.m90"
+
+#define RST_STATUS	0x0078		///< Reset Controller status
+#define RST_SRF_bp  5 ///< Software Reset Flag bit position
+#define RST_SRF_bm  0x20 ///< Software Reset Flag bit mask
+
+#define SWITCHPORT	PORTF
+#define SWITCHPIN		0
+
+#define PORTF 0x06A0
+#define DIR	0
+#define DIRSET 1
+#define DIRCLR 2
+#define DIRTGL 3
+#define PORT_OUT 4
+#define OUTSET 5
+#define OUTCLR 6
+#define OUTTGL 7
+#define PORT_IN 8
+#define INTCTRL 9
+#define INT0MASK 10
+#define INT1MASK 11
+#define INTFLAGS 12
+#define reserved_0x0D 13
+#define reserved_0x0E 14
+#define reserved_0x0F 15
+#define PIN0CTRL 16
+	
+
+;----------------------------------------------------------------------------
+; Set up the RESET segment with a reset vector
+;----------------------------------------------------------------------------
+		  MODULE    ?RESET
+		  EXTERN  ?C_STARTUP
+		  PUBLIC  __program_start
+		  PUBLIC  ?RESET
+
+	ASEG	0x20000
+__program_start:
+?RESET:
+	 RJMP    ?C_STARTUP
+
+		  ENDMOD
+
+;----------------------------------------------------------------------------
+; Set up the INTVEC segment with a reset vector
+;----------------------------------------------------------------------------
+		  MODULE    ?VECT
+		  COMMON  INTVEC:CODE:ROOT(1) ; Align at an even address
+		  EXTERN  ?C_STARTUP
+		  ENDMOD
+
+;----------------------------------------------------------------------------
+; Forward declarations of segments used in initialization
+;----------------------------------------------------------------------------
+	 RSEG    CSTACK:DATA:NOROOT(0)
+	 RSEG    RSTACK:DATA:NOROOT(0)
+
+;----------------------------------------------------------------------------
+; Perform C initialization
+;----------------------------------------------------------------------------
+	 MODULE  ?C_STARTUP
+	 EXTERN  main
+	 EXTERN  exit
+	 EXTERN  _exit
+
+	 RSEG    CODE:CODE:NOROOT(1)
+	 PUBLIC  ?C_STARTUP
+	 PUBLIC  __RESTART
+	 EXTERN ?RESET
+
+__RESTART:
+?C_STARTUP:
+
+#if A90_POINTER_REG_SIZE > 2
+	 PUBLIC  ?zero_reg_initialization
+?zero_reg_initialization:
+	 CLR R15
+	 OUT RAMPD,R15
+#endif
+
+
+;----------------------------------------------------------------------------
+;   Boot Process
+;----------------------------------------------------------------------------
+
+boot_process:
+	// Test Software reset
+	LDS	  R16,(RST_STATUS)
+	SBRC    R16,RST_SRF_bp		// Test Software Reset Flag
+	RJMP	  start_app_jmp
+	
+	// Test ISP pin
+	STS     (SWITCHPORT+DIR), R15
+	LDI	  R16,0x18
+	STS	  (SWITCHPORT+PIN0CTRL+SWITCHPIN), R16
+	LDI	  R16,0xFF
+tempo:
+	DEC	  R16
+	TST 	  R16
+	BRNE    tempo
+	LDS	  R16,(SWITCHPORT+PORT_IN)
+	SBRS    R16,SWITCHPIN 		// test ISP pin active
+	RJMP	  start_boot			// pin  activated
+	
+	// Test beginning of flash blank
+	LDI     R30, 0
+	LDI     R31, 0
+	ELPM    R16, Z+
+	ELPM    R17, Z
+	CPI     R16, 255
+	BRNE    start_app_jmp
+	CPI     R17, 255
+	BRNE    start_app_jmp
+	
+	RJMP	  start_boot
+start_app_jmp:
+	JMP     start_app
+
+;----------------------------------------------------------------------------
+;   Call Bootloader
+;----------------------------------------------------------------------------
+	RSEG    STARTBOOT:CODE:NOROOT(1), 0x201FC
+	PUBLIC  start_boot
+start_boot:
+	RJMP  ?SETUP_STACK
+
+;----------------------------------------------------------------------------
+; Set up the CSTACK and RSTACK pointers.
+;----------------------------------------------------------------------------
+	 RSEG    CODE:CODE:NOROOT(1)
+	 EXTERN  __segment_init
+	 PUBLIC  ?need_segment_init
+
+?SETUP_STACK:
+	 ;; Return address stack (RSTACK)
+	 LDI R16,LOW(SFE(RSTACK)-1)
+	 OUT 0x3D,R16
+#if A90_POINTER_REG_SIZE > 1
+	 LDI R16,HIGH(SFE(RSTACK)-1)
+	 OUT 0x3E,R16
+#endif
+
+	 ;; Data stack (CSTACK)
+	 LDI Y0,LOW(SFE(CSTACK))
+#if A90_POINTER_REG_SIZE > 1
+#if MEMORY_MODEL == TINY_MEMORY_MODEL
+	 LDI Y1,0
+#else
+	 LDI Y1,HIGH(SFE(CSTACK))
+#endif
+#if A90_POINTER_REG_SIZE > 2
+	 LDI Z0,HWRD(SFB(CSTACK))
+	 OUT     RAMPY,Z0
+#endif
+#endif
+?need_segment_init:
+	XCALL   __segment_init
+	RCALL   main
+
+;----------------------------------------------------------------------------
+;   Call Application
+;----------------------------------------------------------------------------
+	EXTERN start_app_key
+
+start_app:
+	 STS	  (SWITCHPORT+PIN0CTRL+SWITCHPIN), R15
+	 LDS     R16, start_app_key
+	 LDS     R17, (start_app_key + 1)
+	 CPI     R16, 0xAA
+	 SBCI    R17, 0x55
+	 BREQ	   clear_rst_flags
+jump_0:
+	 JMP 0
+
+// It is a start application launched by a batchisp start command
+// then clear reset flagS
+clear_rst_flags:
+	 STS     start_app_key, R15
+	 STS     (start_app_key + 1), R15
+	 LDI     R16,RST_SRF_bm       
+	 STS     RST_STATUS,R16   // Clear Software Reset Flag
+	 RJMP		jump_0
+	 END
+
+;----------------------------------------------------------------------------

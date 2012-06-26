@@ -1,0 +1,10 @@
+bin
+obj
+*.a
+*.o
+*.bin
+*.swp
+tags
+TAGS
+cscope.out
+*~

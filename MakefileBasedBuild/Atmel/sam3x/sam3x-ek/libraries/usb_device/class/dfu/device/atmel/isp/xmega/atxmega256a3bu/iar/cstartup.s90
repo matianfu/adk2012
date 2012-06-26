@@ -1,0 +1,211 @@
+;----------------------------------------------------------------------------
+;
+;   This module contains the AVR C and EC++ startup
+;
+;   File version:   $Revision: 6648 $
+;
+;----------------------------------------------------------------------------
+
+
+#include "macros.m90"
+
+#define SWITCHPORT	PORTF
+#define SWITCHPIN		0
+
+#define PORTF 0x06A0
+#define DIR	0
+#define DIRSET 1
+#define DIRCLR 2
+#define DIRTGL 3
+#define PORT_OUT 4
+#define OUTSET 5
+#define OUTCLR 6
+#define OUTTGL 7
+#define PORT_IN 8
+#define INTCTRL 9
+#define INT0MASK 10
+#define INT1MASK 11
+#define INTFLAGS 12
+#define reserved_0x0D 13
+#define reserved_0x0E 14
+#define reserved_0x0F 15
+#define PIN0CTRL 16
+
+	
+
+;----------------------------------------------------------------------------
+; Set up the RESET segment with a reset vector
+;----------------------------------------------------------------------------
+		  MODULE    ?RESET
+		  EXTERN  ?C_STARTUP
+		  PUBLIC  __program_start
+		  PUBLIC  ?RESET
+
+	ASEG	0x40000
+__program_start:
+?RESET:
+	 RJMP    ?C_STARTUP
+
+		  ENDMOD
+
+;----------------------------------------------------------------------------
+; Set up the INTVEC segment with a reset vector
+;----------------------------------------------------------------------------
+		  MODULE    ?VECT
+		  COMMON  INTVEC:CODE:ROOT(1) ; Align at an even address
+		  EXTERN  ?C_STARTUP
+		  ENDMOD
+
+;----------------------------------------------------------------------------
+; Forward declarations of segments used in initialization
+;----------------------------------------------------------------------------
+	 RSEG    CSTACK:DATA:NOROOT(0)
+	 RSEG    RSTACK:DATA:NOROOT(0)
+
+;----------------------------------------------------------------------------
+; Perform C initialization
+;----------------------------------------------------------------------------
+	 MODULE  ?C_STARTUP
+	 EXTERN  __segment_init
+	 EXTERN  main
+	 EXTERN  exit
+	 EXTERN  _exit
+
+;----------------------------------------------------------------------------
+; If the return address stack is located in external SRAM, make sure that
+; you have uncommented the correct code in __low_level_init!!!
+;----------------------------------------------------------------------------
+	 RSEG    CODE:CODE:NOROOT(1)
+	 PUBLIC  ?C_STARTUP
+	 PUBLIC  __RESTART
+	 EXTERN ?RESET
+
+__RESTART:
+?C_STARTUP:
+#if A90_POINTER_REG_SIZE > 2
+	 PUBLIC  ?zero_reg_initialization
+?zero_reg_initialization:
+	 CLR R15
+	 OUT RAMPD,R15
+#endif
+	 REQUIRE ?SETUP_STACK
+	 REQUIRE ?RESET
+	 RSEG    CODE:CODE:NOROOT(1)
+	 PUBLIC  __RSTACK_in_external_ram
+__RSTACK_in_external_ram:
+	 LDI     R16,0xC0
+	 OUT     0x35,R16    ;Enable the external SRAM with a wait state
+
+	 RSEG    CODE:CODE:NOROOT(1)
+	 PUBLIC  __RSTACK_in_external_ram_new_way
+	 EXTERN  __?XMCRA
+
+__RSTACK_in_external_ram_new_way:
+	 LDI     R16,0x8C        ;SRE=1,SRL2=0,SRL1=0,SRL0=0,SRW11=1,SRW10=1,SRW01=0,SRW00=0
+	 STS     __?XMCRA,R16    ;Enable the external SRAM with maximum wait state.
+
+;----------------------------------------------------------------------------
+; Set up the CSTACK and RSTACK pointers.
+;----------------------------------------------------------------------------
+	 RSEG    CODE:CODE:NOROOT(1)
+?SETUP_STACK:
+	 ;; Return address stack (RSTACK)
+	 LDI R16,LOW(SFE(RSTACK)-1)
+	 OUT 0x3D,R16
+#if A90_POINTER_REG_SIZE > 1
+	 LDI R16,HIGH(SFE(RSTACK)-1)
+	 OUT 0x3E,R16
+#endif
+
+	 ;; Data stack (CSTACK)
+	 LDI Y0,LOW(SFE(CSTACK))
+#if A90_POINTER_REG_SIZE > 1
+#if MEMORY_MODEL == TINY_MEMORY_MODEL
+	 LDI Y1,0
+#else
+	 LDI Y1,HIGH(SFE(CSTACK))
+#endif
+#if A90_POINTER_REG_SIZE > 2
+	 LDI Z0,HWRD(SFB(CSTACK))
+	 OUT     RAMPY,Z0
+#endif
+#endif
+
+#if A90_POINTER_REG_SIZE > 2
+; Nothing here, the things previously here has been done earlier.
+#else
+;	 REQUIRE ?call_low_level_init
+
+;----------------------------------------------------------------------------
+; Clear R15 so that it can be used as zero register by the code generator.
+; The compiler will emit a "REQUIRE ?zero_reg_initialization" statement if
+; this optimization has been enabled.
+;----------------------------------------------------------------------------
+	 RSEG    CODE:CODE:NOROOT(1)
+	 PUBLIC  ?zero_reg_initialization
+
+?zero_reg_initialization:
+	 CLR R15
+
+
+;----------------------------------------------------------------------------
+; Call __low_level_init to do low level initializatons. Modify the supplied
+; __low_level_init module to add your own initialization code or to
+; remove segment initialization (by returning 0).
+;----------------------------------------------------------------------------
+	 RSEG    CODE:CODE:NOROOT(1)
+#endif
+	 REQUIRE ?cstartup_call_main
+
+;----------------------------------------------------------------------------
+; Call __segment_init to initialize segments.
+;----------------------------------------------------------------------------
+
+	 RSEG    CODE:CODE:NOROOT(1)
+	PUBLIC  ?need_segment_init
+	EXTERN start_app_key
+	EXTERN nvm_flash_read_byte
+	
+	// BOOT PROCESS MANAGEMENT .....
+	STS     (SWITCHPORT+DIR), R15
+	LDI	  R16,0x18
+	STS	  (SWITCHPORT+PIN0CTRL+SWITCHPIN), R16
+	LDI	  R16,0xFF
+temp0:
+	DEC	  R16
+	TST 	  R16
+	BRNE    temp0
+	LDS	  R16,(SWITCHPORT+PORT_IN)
+	SBRS    R16,SWITCHPIN 		// test DFU pin active
+	RJMP	  start_boot			// pin  activated
+	//test blank ?
+	LDI     R30, 0
+	LDI     R31, 0
+	ELPM    R16, Z+
+	ELPM    R17, Z
+	CPI     R16, 255
+	BRNE    start0
+	CPI     R17, 255
+	BRNE    start0
+start_boot:
+?need_segment_init:
+	XCALL   __segment_init
+
+
+;----------------------------------------------------------------------------
+;   Call main
+;----------------------------------------------------------------------------
+	 RSEG    CODE:CODE:NOROOT(1)
+
+	 PUBLIC  ?cstartup_call_main
+
+?cstartup_call_main:
+	 RCALL   main
+start0:
+	 STS	  (SWITCHPORT+PIN0CTRL+SWITCHPIN), R15
+jump0:
+	 JMP 0
+	 END
+
+;----------------------------------------------------------------------------
+;  

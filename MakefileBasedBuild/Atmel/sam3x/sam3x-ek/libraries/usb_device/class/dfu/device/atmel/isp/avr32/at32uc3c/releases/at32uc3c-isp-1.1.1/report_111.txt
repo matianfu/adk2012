@@ -1,0 +1,1037 @@
+Tests for DFU bootloader 
+
+Device information:
+  Device Name                                   UC3C0512C 
+  Device Revision                               D
+  JTAG ID                                       0x3200003f
+  SRAM size                                     64 kB
+  Flash size                                    512 kB
+batchisp version: 1.2.5
+= SETUP OK 
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+Connected to STK600 (rev C). Firmware version 0x0206.
+Connected to STK600 (rev C). Firmware version 0x0206.
+Reading frequencies.
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+CPU resumes execution at 0x80000000.
+Running batchisp 1.2.5 on Wed Jan 26 17:56:19 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS	0x00000	0x00000
+
+Summary:  Total 7   Passed 7   Failed 0
+= TEST 1-1 - PASS 
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+Connected to STK600 (rev C). Firmware version 0x0206.
+Connected to STK600 (rev C). Firmware version 0x0206.
+Reading frequencies.
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+CPU resumes execution at 0x80000000.
+Running batchisp 1.2.5 on Wed Jan 26 17:56:29 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS	0x00000	0x00000
+
+Summary:  Total 7   Passed 7   Failed 0
+= TEST 1-2 - PASS 
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+Connected to STK600 (rev C). Firmware version 0x0206.
+Connected to STK600 (rev C). Firmware version 0x0206.
+Reading frequencies.
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+CPU resumes execution at 0x80000000.
+Running batchisp 1.2.5 on Wed Jan 26 17:56:39 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS	0x00000	0x00000
+
+Summary:  Total 7   Passed 7   Failed 0
+= TEST 1-3 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:56:41 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Verify defaut ISP configuration in Word 1 and Word 2 from UC3C
+Selecting USER......................... PASS 
+Setting Address Range.................. PASS	0x001f8	0x001f8
+Filling buffer......................... PASS	0x001f8	0x001f8	0X92
+Setting Address Range.................. PASS	0x001f9	0x001f9
+Filling buffer......................... PASS	0x001f9	0x001f9	0X9E
+Setting Address Range.................. PASS	0x001fa	0x001fa
+Filling buffer......................... PASS	0x001fa	0x001fa	0X0E
+Setting Address Range.................. PASS	0x001fb	0x001fb
+Filling buffer......................... PASS	0x001fb	0x001fb	0X62
+Setting Address Range.................. PASS	0x001fc	0x001fc
+Filling buffer......................... PASS	0x001fc	0x001fc	0XE1
+Setting Address Range.................. PASS	0x001fd	0x001fd
+Filling buffer......................... PASS	0x001fd	0x001fd	0X1E
+Setting Address Range.................. PASS	0x001fe	0x001fe
+Filling buffer......................... PASS	0x001fe	0x001fe	0XFF
+Setting Address Range.................. PASS	0x001ff	0x001ff
+Filling buffer......................... PASS	0x001ff	0x001ff	0XD7
+Setting Address Range.................. PASS	0x001f8	0x001ff
+Verifying memory....................... PASS	0x001f8	0x001ff
+
+Summary:  Total 23   Passed 23   Failed 0
+= TEST 2-1 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:56:44 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Verify default configuration of GP fuses bits from UC3C
+Selecting CONFIGURATION................ PASS 
+Setting Address Range.................. PASS	0x00000	0x0001f
+Filling buffer......................... PASS	0x00000	0x0001f	0X1
+Setting Address Range.................. PASS	0x00013	0x00013
+Filling buffer......................... PASS	0x00013	0x00013	0X0
+Setting Address Range.................. PASS	0x00000	0x0001f
+Verifying memory....................... PASS	0x00000	0x0001f
+
+Summary:  Total 11   Passed 11   Failed 0
+= TEST 2-2 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:56:46 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+The security bit must be disabled
+Selecting SECURITY..................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Filling buffer......................... PASS	0x00000	0x00000	0
+Verifying memory....................... PASS	0x00000	0x00000
+
+Summary:  Total 8   Passed 8   Failed 0
+= TEST 2-3 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:56:49 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Verify Signature from UC3C
+Selecting SIGNATURE.................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Filling buffer......................... PASS	0x00000	0x00000	0X1F
+Setting Address Range.................. PASS	0x00001	0x00001
+Filling buffer......................... PASS	0x00001	0x00001	0X20
+Setting Address Range.................. PASS	0x00002	0x00002
+Filling buffer......................... PASS	0x00002	0x00002	0X00
+Setting Address Range.................. PASS	0x00003	0x00003
+Filling buffer......................... PASS	0x00003	0x00003	0X03
+Setting Address Range.................. PASS	0x00000	0x00003
+Verifying memory....................... PASS	0x00000	0x00003
+
+Summary:  Total 15   Passed 15   Failed 0
+= TEST 2-4 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:56:51 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Verify Bootloader Version 1.1.1 (0x11) from UC3C
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Filling buffer......................... PASS	0x00000	0x00000	0X11
+Setting Address Range.................. PASS	0x00001	0x00002
+Filling buffer......................... PASS	0x00001	0x00002	0X00
+Setting Address Range.................. PASS	0x00000	0x00002
+Verifying memory....................... PASS	0x00000	0x00002
+
+Summary:  Total 11   Passed 11   Failed 0
+= TEST 2-5 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:56:54 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Load a HEX file in application section which blink LED0 of STK600 on PB0 (part pin PA08)
+Erasing................................ PASS 
+Selecting FLASH........................ PASS 
+Parsing HEX file....................... PASS	app.hex
+Programming memory
+WARNING: The user program and the bootloader overlap!
+Programming memory..................... PASS	0x00000	0x02577
+Verifying memory....................... PASS	0x00000	0x02577
+
+Summary:  Total 9   Passed 9   Failed 0
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+CPU resumes execution at 0x80000000.
+Running batchisp 1.2.5 on Wed Jan 26 17:57:19 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS	0x00000	0x00000
+
+Summary:  Total 7   Passed 7   Failed 0
+= TEST 3-1 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:57:22 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Launch start command with hardware reset
+Starting Application................... PASS	RESET	1
+
+Summary:  Total 5   Passed 5   Failed 0
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+CPU resumes execution at 0x80000000.
+Test PASS 
+= TEST 3-2 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:57:50 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS	0x00000	0x00000
+
+Summary:  Total 7   Passed 7   Failed 0
+= TEST 3-3 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:57:52 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Disable ISP_IO_COND_END bit
+Selecting USER......................... PASS 
+Setting Address Range.................. PASS	0x001fc	0x001fc
+Filling buffer......................... PASS	0x001fc	0x001fc	0XE1
+Setting Address Range.................. PASS	0x001fd	0x001fd
+Filling buffer......................... PASS	0x001fd	0x001fd	0X1E
+Setting Address Range.................. PASS	0x001fe	0x001fe
+Filling buffer......................... PASS	0x001fe	0x001fe	0XFE
+Setting Address Range.................. PASS	0x001ff	0x001ff
+Filling buffer......................... PASS	0x001ff	0x001ff	0XD0
+Setting Address Range.................. PASS	0x001fc	0x001ff
+Programming memory..................... PASS	0x001fc	0x001ff
+Verifying memory....................... PASS	0x001fc	0x001ff
+
+Summary:  Total 16   Passed 16   Failed 0
+Running batchisp 1.2.5 on Wed Jan 26 17:57:55 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Launch start command with hardware reset
+Starting Application................... PASS	RESET	1
+
+Summary:  Total 5   Passed 5   Failed 0
+Test PASS 
+= TEST 3-4 - PASS 
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+     Unlocking flash: ================================================== 100.0%
+
+       Erasing flash: \
+       Erasing flash: done
+Programming 8 bytes in 1 segment.
+   Programming flash: =========================                           50.0%
+     Verifying flash: ================================================== 100.0%
+
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+CPU resumes execution at 0x80000000.
+Running batchisp 1.2.5 on Wed Jan 26 17:58:10 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS	0x00000	0x00000
+
+Summary:  Total 7   Passed 7   Failed 0
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+     Unlocking flash: ================================================== 100.0%
+
+       Erasing flash: \
+       Erasing flash: done
+Programming 8 bytes in 1 segment.
+   Programming flash: =========================                           50.0%
+     Verifying flash: ================================================== 100.0%
+
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+CPU resumes execution at 0x80000000.
+Running batchisp 1.2.5 on Wed Jan 26 17:58:19 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS	0x00000	0x00000
+
+Summary:  Total 7   Passed 7   Failed 0
+= TEST 3-5 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:58:22 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Write ISP_IO_COND_PIN = PA14, ISP_IO_COND_LEVEL=0 
+Selecting USER......................... PASS 
+Setting Address Range.................. PASS	0x001f8	0x001f8
+Filling buffer......................... PASS	0x001f8	0x001f8	0X92
+Setting Address Range.................. PASS	0x001f9	0x001f9
+Filling buffer......................... PASS	0x001f9	0x001f9	0X9F
+Setting Address Range.................. PASS	0x001fa	0x001fa
+Filling buffer......................... PASS	0x001fa	0x001fa	0X0E
+Setting Address Range.................. PASS	0x001fb	0x001fb
+Filling buffer......................... PASS	0x001fb	0x001fb	0X77
+Setting Address Range.................. PASS	0x001f8	0x001fb
+Programming memory..................... PASS	0x001f8	0x001fb
+Verifying memory....................... PASS	0x001f8	0x001fb
+
+Summary:  Total 16   Passed 16   Failed 0
+Running batchisp 1.2.5 on Wed Jan 26 17:58:24 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Launch start command with hardware reset
+Starting Application................... PASS	RESET	1
+
+Summary:  Total 5   Passed 5   Failed 0
+Test PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:58:45 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS	0x00000	0x00000
+
+Summary:  Total 7   Passed 7   Failed 0
+= TEST 4-1 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:58:48 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Write ISP_IO_COND_PIN = PB00, ISP_IO_COND_LEVEL=1 
+Selecting USER......................... PASS 
+Setting Address Range.................. PASS	0x001f8	0x001f8
+Filling buffer......................... PASS	0x001f8	0x001f8	0X92
+Setting Address Range.................. PASS	0x001f9	0x001f9
+Filling buffer......................... PASS	0x001f9	0x001f9	0X9E
+Setting Address Range.................. PASS	0x001fa	0x001fa
+Filling buffer......................... PASS	0x001fa	0x001fa	0X20
+Setting Address Range.................. PASS	0x001fb	0x001fb
+Filling buffer......................... PASS	0x001fb	0x001fb	0XA8
+Setting Address Range.................. PASS	0x001f8	0x001fb
+Programming memory..................... PASS	0x001f8	0x001fb
+Verifying memory....................... PASS	0x001f8	0x001fb
+
+Summary:  Total 16   Passed 16   Failed 0
+Running batchisp 1.2.5 on Wed Jan 26 17:58:50 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Launch start command with hardware reset
+Starting Application................... PASS	RESET	1
+
+Summary:  Total 5   Passed 5   Failed 0
+Running batchisp 1.2.5 on Wed Jan 26 17:58:58 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS	0x00000	0x00000
+
+Summary:  Total 7   Passed 7   Failed 0
+= TEST 4-2 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:59:00 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Write ISP_IO_COND_PIN = PC30, ISP_IO_COND_LEVEL=1 
+Selecting USER......................... PASS 
+Setting Address Range.................. PASS	0x001f8	0x001f8
+Filling buffer......................... PASS	0x001f8	0x001f8	0X92
+Setting Address Range.................. PASS	0x001f9	0x001f9
+Filling buffer......................... PASS	0x001f9	0x001f9	0X9E
+Setting Address Range.................. PASS	0x001fa	0x001fa
+Filling buffer......................... PASS	0x001fa	0x001fa	0X5E
+Setting Address Range.................. PASS	0x001fb	0x001fb
+Filling buffer......................... PASS	0x001fb	0x001fb	0XD5
+Setting Address Range.................. PASS	0x001f8	0x001fb
+Programming memory..................... PASS	0x001f8	0x001fb
+Verifying memory....................... PASS	0x001f8	0x001fb
+
+Summary:  Total 16   Passed 16   Failed 0
+Running batchisp 1.2.5 on Wed Jan 26 17:59:03 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Launch start command with hardware reset
+Starting Application................... PASS	RESET	1
+
+Summary:  Total 5   Passed 5   Failed 0
+Running batchisp 1.2.5 on Wed Jan 26 17:59:09 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS	0x00000	0x00000
+
+Summary:  Total 7   Passed 7   Failed 0
+= TEST 4-3 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:59:12 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Write ISP_IO_COND_PIN = PD09, ISP_IO_COND_LEVEL=1 
+Selecting USER......................... PASS 
+Setting Address Range.................. PASS	0x001f8	0x001f8
+Filling buffer......................... PASS	0x001f8	0x001f8	0X92
+Setting Address Range.................. PASS	0x001f9	0x001f9
+Filling buffer......................... PASS	0x001f9	0x001f9	0X9E
+Setting Address Range.................. PASS	0x001fa	0x001fa
+Filling buffer......................... PASS	0x001fa	0x001fa	0X69
+Setting Address Range.................. PASS	0x001fb	0x001fb
+Filling buffer......................... PASS	0x001fb	0x001fb	0X50
+Setting Address Range.................. PASS	0x001f8	0x001fb
+Programming memory..................... PASS	0x001f8	0x001fb
+Verifying memory....................... PASS	0x001f8	0x001fb
+
+Summary:  Total 16   Passed 16   Failed 0
+Running batchisp 1.2.5 on Wed Jan 26 17:59:14 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Launch start command with hardware reset
+Starting Application................... PASS	RESET	1
+
+Summary:  Total 5   Passed 5   Failed 0
+Running batchisp 1.2.5 on Wed Jan 26 17:59:18 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS	0x00000	0x00000
+
+Summary:  Total 7   Passed 7   Failed 0
+= TEST 4-4 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:59:21 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Set a bad CRC in ISP configuration word 2
+Selecting USER......................... PASS 
+Setting Address Range.................. PASS	0x001f8	0x001f8
+Filling buffer......................... PASS	0x001f8	0x001f8	0X92
+Setting Address Range.................. PASS	0x001f9	0x001f9
+Filling buffer......................... PASS	0x001f9	0x001f9	0X9E
+Setting Address Range.................. PASS	0x001fa	0x001fa
+Filling buffer......................... PASS	0x001fa	0x001fa	0X0E
+Setting Address Range.................. PASS	0x001fb	0x001fb
+Filling buffer......................... PASS	0x001fb	0x001fb	0X61
+Setting Address Range.................. PASS	0x001f8	0x001fb
+Programming memory..................... PASS	0x001f8	0x001fb
+Verifying memory....................... PASS	0x001f8	0x001fb
+
+Summary:  Total 16   Passed 16   Failed 0
+Running batchisp 1.2.5 on Wed Jan 26 17:59:24 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Launch start command with hardware reset
+Starting Application................... PASS	RESET	1
+
+Summary:  Total 5   Passed 5   Failed 0
+Connected to AVR ONE! 000000000274 version 4.16.
+Querying file system information.
+FPGA file avr32 version 4.0 loaded.
+JTAG clock is configured at 32.014 MHz.
+CPU resumes execution at 0x80000000.
+Running batchisp 1.2.5 on Wed Jan 26 17:59:31 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting BOOT......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS	0x00000	0x00000
+
+Summary:  Total 7   Passed 7   Failed 0
+Running batchisp 1.2.5 on Wed Jan 26 17:59:34 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Program default configuration Word 2 from UC3C
+Selecting USER......................... PASS 
+Setting Address Range.................. PASS	0x001f8	0x001f8
+Filling buffer......................... PASS	0x001f8	0x001f8	0X92
+Setting Address Range.................. PASS	0x001f9	0x001f9
+Filling buffer......................... PASS	0x001f9	0x001f9	0X9E
+Setting Address Range.................. PASS	0x001fa	0x001fa
+Filling buffer......................... PASS	0x001fa	0x001fa	0X0E
+Setting Address Range.................. PASS	0x001fb	0x001fb
+Filling buffer......................... PASS	0x001fb	0x001fb	0X62
+Setting Address Range.................. PASS	0x001f8	0x001fb
+Programming memory..................... PASS	0x001f8	0x001fb
+Verifying memory....................... PASS	0x001f8	0x001fb
+
+Summary:  Total 16   Passed 16   Failed 0
+= TEST 4-5 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 17:59:36 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Enable security bit
+Selecting SECURITY..................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Filling buffer......................... PASS	0x00000	0x00000	0
+Verifying memory....................... PASS	0x00000	0x00000
+Filling buffer......................... PASS	0x00000	0x00000	1
+Programming memory..................... PASS	0x00000	0x00000
+Verifying memory....................... PASS	0x00000	0x00000
+
+Summary:  Total 11   Passed 11   Failed 0
+Running batchisp 1.2.5 on Wed Jan 26 17:59:44 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Check access on all memories available
+Selecting SECURITY..................... PASS 
+Reading memory......................... PASS	0x00000	0x00000
+Selecting CONFIGURATION................ PASS 
+Reading memory......................... PASS	0x00000	0x0001f
+Selecting BOOT......................... PASS 
+Reading memory......................... PASS	0x00000	0x00002
+Selecting SIGNATURE.................... PASS 
+Reading memory......................... PASS	0x00000	0x00003
+Selecting FLASH........................ PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS*	Device protection is set.
+Selecting USER......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x00000
+Reading memory......................... PASS*	Device protection is set.
+
+Summary:  Total 18   Passed 18   Failed 0
+= TEST 5-1 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 18:00:34 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Selecting CONFIGURATION................ PASS 
+Verify default configuration of GP fuses bits from UC3C
+Setting Address Range.................. PASS	0x00000	0x0001f
+Filling buffer......................... PASS	0x00000	0x0001f	0X1
+Setting Address Range.................. PASS	0x00013	0x00013
+Filling buffer......................... PASS	0x00013	0x00013	0X0
+Setting Address Range.................. PASS	0x00000	0x0001f
+Verifying memory....................... PASS	0x00000	0x0001f
+Modify a byte of fuse bit
+Setting Address Range.................. PASS	0x00000	0x00007
+Filling buffer......................... PASS	0x00000	0x00007	0
+Programming memory..................... PASS	0x00000	0x00007
+Setting Address Range.................. PASS	0x00000	0x0001f
+Verifying memory....................... PASS	0x00000	0x0001f
+Setting Address Range.................. PASS	0x00000	0x00007
+Filling buffer......................... PASS	0x00000	0x00007	1
+Programming memory..................... PASS	0x00000	0x00007
+Setting Address Range.................. PASS	0x00000	0x0001f
+Verifying memory....................... PASS	0x00000	0x0001f
+Modify one fuse bit
+Setting Address Range.................. PASS	0x0001e	0x0001e
+Filling buffer......................... PASS	0x0001e	0x0001e	0
+Programming memory..................... PASS	0x0001e	0x0001e
+Setting Address Range.................. PASS	0x00000	0x0001f
+Verifying memory....................... PASS	0x00000	0x0001f
+Setting Address Range.................. PASS	0x0001f	0x0001f
+Filling buffer......................... PASS	0x0001f	0x0001f	0
+Programming memory..................... PASS	0x0001f	0x0001f
+Setting Address Range.................. PASS	0x00000	0x0001f
+Verifying memory....................... PASS	0x00000	0x0001f
+Write default configuration of GP fuses bits from UC3C
+Setting Address Range.................. PASS	0x00000	0x0001f
+Filling buffer......................... PASS	0x00000	0x0001f	0X1
+Setting Address Range.................. PASS	0x00013	0x00013
+Filling buffer......................... PASS	0x00013	0x00013	0X0
+Setting Address Range.................. PASS	0x00000	0x0001f
+Programming memory..................... PASS	0x00000	0x0001f
+Verifying memory....................... PASS	0x00000	0x0001f
+
+Summary:  Total 38   Passed 38   Failed 0
+= TEST 6-1 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 18:00:38 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Tests erase F and blankcheck commands
+Erasing................................ PASS 
+Selecting FLASH........................ PASS 
+Setting Address Range.................. PASS	0x02000	0x7ffff
+Blank checking......................... PASS	0x02000	0x7ffff
+Filling buffer......................... PASS	0x02000	0x7ffff	0XFF
+Verifying memory....................... PASS	0x02000	0x7ffff
+Filling buffer......................... PASS	0x02000	0x7ffff	0X55
+Programming memory..................... PASS	0x02000	0x7ffff
+Verifying memory....................... PASS	0x02000	0x7ffff
+Blank checking......................... PASS*	Blank check fail at 0x02000
+Erasing................................ PASS 
+Selecting FLASH........................ PASS 
+Setting Address Range.................. PASS	0x02000	0x7ffff
+Blank checking......................... PASS	0x02000	0x7ffff
+
+Summary:  Total 18   Passed 18   Failed 0
+= TEST 7-1 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 18:03:07 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+run Read/Write flash sequences
+Selecting FLASH........................ PASS 
+Setting Address Range.................. PASS	0x02000	0x7ffff
+Filling buffer......................... PASS	0x02000	0x7ffff	0XFF
+Setting Address Range.................. PASS	0x02001	0x02002
+Filling buffer......................... PASS	0x02001	0x02002	0X11
+Programming memory..................... PASS	0x02001	0x02002
+Setting Address Range.................. PASS	0x021fe	0x0221e
+Filling buffer......................... PASS	0x021fe	0x0221e	0X22
+Programming memory..................... PASS	0x021fe	0x0221e
+Setting Address Range.................. PASS	0x04000	0x04fff
+Filling buffer......................... PASS	0x04000	0x04fff	0X33
+Programming memory..................... PASS	0x04000	0x04fff
+Setting Address Range.................. PASS	0x0fffc	0x10000
+Filling buffer......................... PASS	0x0fffc	0x10000	0X44
+Programming memory..................... PASS	0x0fffc	0x10000
+Setting Address Range.................. PASS	0x3fffe	0x40001
+Filling buffer......................... PASS	0x3fffe	0x40001	0X55
+Programming memory..................... PASS	0x3fffe	0x40001
+Setting Address Range.................. PASS	0x40200	0x4ffff
+Filling buffer......................... PASS	0x40200	0x4ffff	0X66
+Programming memory..................... PASS	0x40200	0x4ffff
+Setting Address Range.................. PASS	0x7ffff	0x7ffff
+Filling buffer......................... PASS	0x7ffff	0x7ffff	0X77
+Programming memory..................... PASS	0x7ffff	0x7ffff
+Setting Address Range.................. PASS	0x10001	0x1f5ff
+Filling buffer......................... PASS	0x10001	0x1f5ff	0X88
+Programming memory..................... PASS	0x10001	0x1f5ff
+Setting Address Range.................. PASS	0x02000	0x7ffff
+Verifying memory....................... PASS	0x02000	0x7ffff
+
+Summary:  Total 33   Passed 33   Failed 0
+= TEST 7-2 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 18:03:54 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Load a HEX file in application section which blink LED0 of STK600 on PB0 (part pin PA08)
+Erasing................................ PASS 
+Selecting FLASH........................ PASS 
+Parsing HEX file....................... PASS	app.hex
+Programming memory
+WARNING: The user program and the bootloader overlap!
+Programming memory..................... PASS	0x00000	0x02577
+Verifying memory....................... PASS	0x00000	0x02577
+
+Summary:  Total 9   Passed 9   Failed 0
+= TEST 7-3 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 18:04:15 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Verify blankcheck command on User flash page 512B
+Selecting USER......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x001f7
+Blank checking......................... PASS	0x00000	0x001f7
+Setting Address Range.................. PASS	0x00100	0x00100
+Filling buffer......................... PASS	0x00100	0x00100	0X55
+Programming memory..................... PASS	0x00100	0x00100
+Setting Address Range.................. PASS	0x00000	0x001f7
+Blank checking......................... PASS*	Blank check fail at 0x00100
+Setting Address Range.................. PASS	0x00100	0x00100
+Filling buffer......................... PASS	0x00100	0x00100	0XFF
+Programming memory..................... PASS	0x00100	0x00100
+Setting Address Range.................. PASS	0x00000	0x001f7
+Blank checking......................... PASS	0x00000	0x001f7
+
+Summary:  Total 17   Passed 17   Failed 0
+= TEST 8-1 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 18:04:18 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Verify Read/Write access on user flash 512B
+Selecting USER......................... PASS 
+Setting Address Range.................. PASS	0x00000	0x001f7
+Filling buffer......................... PASS	0x00000	0x001f7	0X55
+Programming memory..................... PASS	0x00000	0x001f7
+Verifying memory....................... PASS	0x00000	0x001f7
+Filling buffer......................... PASS	0x00000	0x001f7	0XFF
+Programming memory..................... PASS	0x00000	0x001f7
+Verifying memory....................... PASS	0x00000	0x001f7
+Setting Address Range.................. PASS	0x00000	0x00000
+Filling buffer......................... PASS	0x00000	0x00000	0X11
+Programming memory..................... PASS	0x00000	0x00000
+Setting Address Range.................. PASS	0x0007f	0x00081
+Filling buffer......................... PASS	0x0007f	0x00081	0X22
+Programming memory..................... PASS	0x0007f	0x00081
+Setting Address Range.................. PASS	0x00081	0x000f0
+Filling buffer......................... PASS	0x00081	0x000f0	0X33
+Programming memory..................... PASS	0x00081	0x000f0
+Setting Address Range.................. PASS	0x000fb	0x00110
+Filling buffer......................... PASS	0x000fb	0x00110	0X44
+Programming memory..................... PASS	0x000fb	0x00110
+Setting Address Range.................. PASS	0x00150	0x001f7
+Filling buffer......................... PASS	0x00150	0x001f7	0X55
+Programming memory..................... PASS	0x00150	0x001f7
+Setting Address Range.................. PASS	0x00000	0x001f7
+Verifying memory....................... PASS	0x00000	0x001f7
+Filling buffer......................... PASS	0x00000	0x001f7	0XFF
+Programming memory..................... PASS	0x00000	0x001f7
+Blank checking......................... PASS	0x00000	0x001f7
+
+Summary:  Total 32   Passed 32   Failed 0
+= TEST 8-2 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 18:04:22 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Launch start command with hardware reset
+Starting Application................... PASS	RESET	1
+
+Summary:  Total 5   Passed 5   Failed 0
+Test PASS 
+= TEST 9-1 - PASS 
+Running batchisp 1.2.5 on Wed Jan 26 18:05:52 2011
+
+
+
+AT32UC3C0512C - USB - USB/DFU
+
+
+Device selection....................... PASS 
+Hardware selection..................... PASS 
+Opening port........................... PASS 
+Reading Bootloader version............. PASS	1.1.1
+Launch start command with software reset
+Starting Application................... PASS	NORESET	0
+
+Summary:  Total 5   Passed 5   Failed 0
+Test PASS 
+= TEST 9-2 - PASS 
+==== All tests PASS ====

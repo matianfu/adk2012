@@ -1,0 +1,48 @@
+<asf xmlversion="1.0">
+	<select-by-config id="avr32.drivers.usbb.device" name="config.avr32.drivers.usbb.device.sleepmgr" caption="USB - Universial Serial Bus stack" default="yes">
+		<module type="driver" id="avr32.drivers.usbb.device#yes" caption="USB - Universial Serial Bus Stack">
+			<info type="description" value="summary">
+			USB stack for USB device and OTG. Provides functions for configuring and managing end-points, and for OTG host operation.
+			</info>
+			<info type="gui-flag" value="hidden"/>
+			<info type="status" value="stable"/>
+			<info type="distribution" value="public"/>
+			<info type="keyword" value="technology">
+				<keyword value="USB"/>
+			</info>
+			<build type="c-source" value="usbb_device.c"/>
+			<build type="header-file" value="usbb_device.h"/>
+			<build type="header-file" value="usbb_otg.h"/>
+			<build type="include-path" value="."/>
+			<build type="module-config" subtype="required-header-file" value="conf_usb.h"/>
+			<device-support value="uc3a"/>
+			<device-support value="uc3a3_a4"/>
+			<device-support value="uc3b"/>
+			<require idref="common.services.basic.clock"/>
+			<require idref="common.services.basic.sleepmgr"/>
+			<require idref="avr32.utils"/>
+			<generator value="doxygen-module" default-mcu="unspecified-uc3a"/>
+		</module>
+		<module type="driver" id="avr32.drivers.usbb.device#no" caption="USB - Universial Serial Bus stack">
+			<info type="description" value="summary">
+			USB stack for USB device and OTG. Provides functions for configuring and managing end-points, and for OTG host operation.
+			</info>
+			<info type="gui-flag" value="hidden"/>
+			<info type="status" value="stable"/>
+			<info type="distribution" value="public"/>
+			<info type="keyword" value="technology">
+				<keyword value="USB"/>
+			</info>
+			<build type="c-source" value="usbb_device.c"/>
+			<build type="header-file" value="usbb_device.h"/>
+			<build type="header-file" value="usbb_otg.h"/>
+			<build type="include-path" value="."/>
+			<device-support value="uc3a"/>
+			<device-support value="uc3a3_a4"/>
+			<device-support value="uc3b"/>
+			<require idref="common.services.basic.clock"/>
+			<require idref="avr32.utils"/>
+			<generator value="doxygen-module" default-mcu="unspecified-uc3a"/>
+		</module>
+	</select-by-config>
+</asf>
