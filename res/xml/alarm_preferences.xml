@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="alarm_on"
+        android:title="@string/pref_alarm_on_title" />
+
+    <com.google.android.apps.adk2.widget.TimeDialogPreference
+        android:dialogLayout="@layout/time_dialog"
+        android:key="alarm_time"
+        android:negativeButtonText="@string/cancel"
+        android:positiveButtonText="@string/set"
+        android:title="@string/pref_alarm_time_title" />
+    />
+    <ListPreference
+        android:key="alarm_sound"
+        android:summary="{tbd}"
+        android:title="@string/pref_alarm_sound_title" />
+
+</PreferenceScreen>

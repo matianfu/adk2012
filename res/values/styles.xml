@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ADK2" parent="android:style/Theme.Holo">
+        <item name="android:actionBarStyle">@style/Theme.ADK2_ActionBar</item>
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+    
+    <style name="Theme.ADK2_ActionBar" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">@drawable/ab_rainbow_bg</item>
+    </style>
+</resources>

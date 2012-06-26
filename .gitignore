@@ -1,5 +1,2 @@
-*.swp
-*~
-TAGS
-tags
-cscope.out
+bin/
+gen/

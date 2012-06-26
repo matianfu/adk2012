@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:adk2012="http://schemas.android.com/apk/res/com.google.android.apps.adk2" >
+
+    <com.google.android.apps.adk2.widget.ActivityPreference
+        adk2012:classname="com.google.android.apps.adk2.activity.ColorRGBActivity"
+        android:key="color"
+        android:title="@string/pref_color_base" />
+    <com.google.android.apps.adk2.widget.ActivityPreference
+        adk2012:classname="com.google.android.apps.adk2.activity.ColorSensorActivity"
+        android:key="color"
+        android:title="@string/pref_color_colorimeter" />
+
+</PreferenceScreen>

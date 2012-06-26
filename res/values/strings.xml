@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_short_name">ADK 2012</string>
+    <string name="app_long_name">ADK DemoKit 2012</string>
+    <string name="clock">Clock</string>
+    <string name="capture">Capture</string>
+    <string name="adk_description">A picture of the 2012 ADK.</string>
+    <string name="capture_prompt">When ready press the capture button below.</string>
+    <string name="alarm">Alarm</string>
+    <string name="volume">Volume</string>
+    <string name="color">Color</string>
+    <string name="color_sensor">Color sensor</string>
+    <string name="color_combinations">Color combinations</string>
+    <string name="brightness">Brightness</string>
+    <string name="bluetooth">Use Bluetooth</string>
+    <string name="display">Display</string>
+    <string name="presets">Presets</string>
+    <string name="locked">Locked</string>
+    <string name="unlocked">Unlocked</string>
+    <string name="time">Time</string>
+    <string name="accel">Acceleration</string>
+    <string name="temperature">Temperature</string>
+    <string name="hygro">Hygro</string>
+    <string name="leds_animation">LEDs animation</string>
+    <string name="baro">Pressure</string>
+    <string name="mag">Magnetic</string>
+    <string name="prox">Proximity</string>
+    <string name="no_presets">No presets</string>
+    <string name="new_preset">New preset</string>
+    <string name="name">Name</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="rename">Rename</string>
+    <string name="cancel">Cancel</string>
+    <string name="create">Create</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="title_paired_devices">Paired devices</string>
+    <string name="set">Set</string>
+    <string name="licenses">Licenses</string>
+    <string name="monochromatic">Monochromatic</string>
+    <string name="analogous">Analogous</string>
+    <string name="triad">Triad</string>
+    <string name="complementary">Complementary</string>
+    <string name="shade">Shade</string>
+    <string name="connect_please">Your ADK is not connected.</string>
+    <string name="plug_in_or_use_bluetooth">Please plug in the USB cable or use Bluetooth to connect to the ADK.</string>
+    <string name="fake_it">Fake it</string>
+    <string name="none_paired">None paired</string>
+    <string name="select_device">Select device</string>
+    <string name="pref_alarm_on_title">Turn ADK alarm on</string>
+    <string name="pref_alarm_vibrate_title">Vibrate</string>
+    <string name="pref_alarm_time_title">Time</string>
+    <string name="pref_alarm_sound_title">ADK alarm sound</string>
+    <string name="pref_clock_set_time_title">Set time</string>
+    <string name="pref_volume_title">Volume</string>
+    <string name="pref_color_base">Base</string>
+    <string name="pref_color_camera">Capture with phone camera</string>
+    <string name="pref_color_colorimeter">Capture with ADK color sensor</string>
+    <string name="pref_color_combinations">Combinations</string>
+    <string name="sync_width_adk_clock">Sync with ADK clock</string>
+    <string name="tbd">{tbd}</string>
+
+    <plurals name="number_of_presets_deleted">
+        <item quantity="one">Deleted one preset.</item>
+        <item quantity="two">Deleted two presets.</item>
+        <item quantity="other">Deleted %d presets.</item>
+    </plurals>
+    <string name="change_bt_name">Change Bluetooth Name</string>
+    <string name="set_bt_name_title">Set Bluetooth Name</string>
+    <string name="set_bt_name_ok">OK</string>
+    <string name="set_bt_name_cancel">Cancel</string>
+
+</resources>

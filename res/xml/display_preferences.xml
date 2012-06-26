@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="checkboxPref"
+            android:title="Use PIN" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="checkboxPref2"
+            android:title="Don&apos;t use PIN" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

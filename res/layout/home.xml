@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        >
+
+        <include
+            tools:ignore="NestedWeights"
+            layout="@layout/home_button"
+            android:id="@+id/clock_button"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+        <View tools:ignore="PxUsage"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="@color/home_activity_divider"
+            />
+            
+        <include layout="@layout/home_button"
+            android:id="@+id/alarm_button"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+    </LinearLayout>
+
+    <View tools:ignore="PxUsage"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/home_activity_divider"
+        />
+ 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        >
+
+        <include
+               tools:ignore="NestedWeights"
+            layout="@layout/home_button"
+            android:id="@+id/volume_button"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+        <View
+            tools:ignore="PxUsage"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="@color/home_activity_divider"
+            />
+            
+        <include
+            layout="@layout/home_button"
+            android:id="@+id/color_button"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+        
+    </LinearLayout>
+
+    <View
+        tools:ignore="PxUsage"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/home_activity_divider"
+        />
+ 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        >
+
+        <include
+            tools:ignore="NestedWeights"
+            layout="@layout/home_button"
+            android:id="@+id/brightness_button"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+        <View tools:ignore="PxUsage"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="@color/home_activity_divider"
+            />
+            
+        <include
+            layout="@layout/home_button"
+            android:id="@+id/display_button"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+        
+    </LinearLayout>
+
+    <View
+        tools:ignore="PxUsage"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/home_activity_divider"
+        />
+ 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        >
+
+        <include
+            tools:ignore="NestedWeights"
+            layout="@layout/home_button"
+            android:id="@+id/presets_button"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+        <View
+            tools:ignore="PxUsage"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="@color/home_activity_divider"
+            />
+            
+        <include
+            layout="@layout/home_button"
+            android:id="@+id/lock_button"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+        
+    </LinearLayout>
+
+    <View
+        tools:ignore="PxUsage"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/home_activity_divider"
+        />
+    
+</LinearLayout>

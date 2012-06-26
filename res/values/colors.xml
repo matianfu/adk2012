@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="window_background">#000000</color>
+
+    <color name="home_button_normal">#000000</color>
+    <color name="home_button_pressed">#257391</color>
+
+    <color name="home_activity_divider">#666666</color>
+    <color name="home_button_label">#eeeeee</color>
+
+    <color name="combination_color">#eeeeee</color>
+</resources>

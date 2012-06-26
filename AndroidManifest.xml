@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.google.android.apps.adk2"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="10"
+        android:targetSdkVersion="15" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-feature
+        android:name="android.hardware.usb.accessory"
+        android:required="true" />
+
+    <application
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_launcher_adk"
+        android:label="@string/app_short_name"
+        android:theme="@style/Theme.ADK2" >
+        <uses-library android:name="com.android.future.usb.accessory" />
+
+        <activity
+            android:name=".activity.ConnectActivity"
+            android:label="@string/app_short_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.BTDeviceListActivity"
+            android:label="@string/bluetooth"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.HomeActivity"
+            android:label="@string/app_short_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.AlarmActivity"
+            android:label="@string/alarm"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ClockActivity"
+            android:label="@string/clock"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.VolumeActivity"
+            android:label="@string/volume"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ColorActivity"
+            android:label="@string/color"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ColorRGBActivity"
+            android:label="@string/color"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ColorCameraActivity"
+            android:label="@string/color"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ColorSensorActivity"
+            android:label="@string/color_sensor"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ColorCombinationsActivity"
+            android:label="@string/color_combinations"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.BrightnessActivity"
+            android:label="@string/brightness"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.DisplayActivity"
+            android:label="@string/display"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.PresetsActivity"
+            android:label="@string/presets"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.LicenseActivity"
+            android:label="@string/licenses"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="USBAccessoryActivity"
+            android:label="@string/app_long_name"
+            android:launchMode="singleInstance"
+            android:taskAffinity="" >
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
+                android:resource="@xml/usb_accessory_filter" />
+        </activity>
+    </application>
+
+</manifest>

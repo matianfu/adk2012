@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/display_group"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="25dip" >
+
+    <!--
+  AdkShowAnimation,
+  AdkShowAccel,
+  AdkShowMag,
+  AdkShowTemp,
+  AdkShowHygro,
+  AdkShowBaro,
+  AdkShowProx,
+  AdkShowColor,
+    -->
+
+    <RadioButton
+        android:id="@+id/radio_animation"
+        style="@android:style/TextAppearance.DeviceDefault.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/leds_animation" />
+
+    <RadioButton
+        android:id="@+id/radio_accell"
+        style="@android:style/TextAppearance.DeviceDefault.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/accel" />
+
+    <RadioButton
+        android:id="@+id/radio_mag"
+        style="@android:style/TextAppearance.DeviceDefault.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/mag" />
+
+    <RadioButton
+        android:id="@+id/radio_temperature"
+        style="@android:style/TextAppearance.DeviceDefault.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/temperature" />
+
+    <RadioButton
+        android:id="@+id/radio_hygro"
+        style="@android:style/TextAppearance.DeviceDefault.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/hygro" />
+
+    <RadioButton
+        android:id="@+id/radio_baro"
+        style="@android:style/TextAppearance.DeviceDefault.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/baro" />
+
+    <RadioButton
+        android:id="@+id/radio_prox"
+        style="@android:style/TextAppearance.DeviceDefault.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/prox" />
+
+    <RadioButton
+        android:id="@+id/radio_color"
+        style="@android:style/TextAppearance.DeviceDefault.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/color" />
+    
+</RadioGroup>

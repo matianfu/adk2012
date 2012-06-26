@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <RelativeLayout
+        android:id="@+id/camera_frame"
+        android:layout_width="match_parent"
+        android:layout_height="300dip"
+        >
+        
+        <SurfaceView
+            android:id="@+id/camera_surface"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            />
+        
+        <View tools:ignore="PxUsage"
+            android:layout_width="40px"
+            android:layout_height="40px"
+            android:layout_centerInParent="true"
+            android:background="#ff000000"
+            />
+
+        <View tools:ignore="PxUsage"
+            android:id="@+id/sample_preview"
+            android:layout_width="160px"
+            android:layout_height="160px"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:visible="false"
+            />
+        
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/color_sample_button"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_below="@+id/camera_frame"
+        android:layout_centerHorizontal="true"
+        />
+
+</RelativeLayout>

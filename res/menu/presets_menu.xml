@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/new_preset"
+        android:showAsAction="always"
+        android:title="@string/new_preset">
+    </item>
+
+</menu>

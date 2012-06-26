@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <View
+        android:layout_width="0dip"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:gravity="center" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dip"
+        android:gravity="center"
+        android:text="@string/capture_prompt"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <com.google.android.apps.adk2.views.ColorSensorView
+        android:id="@+id/color_sensor_view"
+        android:layout_width="200dip"
+        android:layout_height="200dip"
+        android:layout_gravity="center"
+        android:layout_margin="25dip"
+        android:gravity="center" />
+
+    <Button
+        android:id="@+id/color_sample_button"
+        android:layout_width="match_parent"
+        android:layout_height="80dip"
+        android:layout_margin="25dip"
+        android:gravity="center"
+        android:text="@string/capture" />
+
+    <View
+        android:layout_width="0dip"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:gravity="center" />
+
+</LinearLayout>

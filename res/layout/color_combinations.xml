@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="25dip" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp" >
+
+        <View
+            android:id="@+id/color_combo1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/combination_color" />
+
+        <View
+            android:id="@+id/color_combo2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/combination_color" />
+
+        <View
+            android:id="@+id/color_combo3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/combination_color" />
+
+        <View
+            android:id="@+id/color_combo4"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/combination_color" />
+
+        <View
+            android:id="@+id/color_combo5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/combination_color" />
+    </LinearLayout>
+
+    <RadioGroup
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/color_combination_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="25dip" >
+
+        <RadioButton
+            android:id="@+id/radio_monochromatic"
+            style="@android:style/TextAppearance.DeviceDefault.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/monochromatic" />
+
+        <RadioButton
+            android:id="@+id/radio_analogous"
+            style="@android:style/TextAppearance.DeviceDefault.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/analogous" />
+
+        <RadioButton
+            android:id="@+id/radio_triad"
+            style="@android:style/TextAppearance.DeviceDefault.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/triad" />
+    </RadioGroup>
+
+</LinearLayout>

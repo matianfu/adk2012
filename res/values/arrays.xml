@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="alarm_sounds">
+        <item>Silent</item>
+        <item>Cesium</item>
+        <item>Fermium</item>
+        <item>Hassium</item>
+        <item>Neptunium</item>
+        <item>Nobelium</item>
+        <item>Plutonium</item>
+    </string-array>
+
+</resources>

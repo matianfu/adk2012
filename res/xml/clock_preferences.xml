@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <com.google.android.apps.adk2.widget.TimeDialogPreference
+        android:dialogLayout="@layout/time_dialog"
+        android:key="time"
+        android:negativeButtonText="@string/cancel"
+        android:positiveButtonText="@string/set"
+        android:title="@string/pref_clock_set_time_title" />
+
+</PreferenceScreen>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <declare-styleable name = "ActivityPreference">
+        <attr name="classname" format = "string"/>
+    </declare-styleable>
+
+    <declare-styleable name = "SeekBarPreference">
+        <attr name="max" format = "integer"/>
+    </declare-styleable>
+</resources>
