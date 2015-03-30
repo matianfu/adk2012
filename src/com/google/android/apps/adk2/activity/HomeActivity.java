@@ -19,7 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 
@@ -27,7 +26,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;	/* new */
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -44,6 +42,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -69,6 +68,7 @@ public class HomeActivity extends Activity implements OnClickListener,
 
 	private UsbManager mUSBManager;
 	private SharedPreferences mPreferences;
+	// private Button mBluetoothButton;
 
 	private ByteArrayOutputStream mLicenseTextStream;
 
@@ -152,44 +152,37 @@ public class HomeActivity extends Activity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.home);
+//		setContentView(R.layout.connect);
+//		mBluetoothButton = (Button) findViewById(R.id.connect_bluetooth_button);
+//		mBluetoothButton.setOnClickListener(this);
 
 		mDeviceHandler = new Handler(this);
 		mSettingsPollingHandler = new Handler(this);
-
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		mPreferences.registerOnSharedPreferenceChangeListener(this);
-
-		// mUSBManager = UsbManager.getInstance(this);
+//
+//		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+//		mPreferences.registerOnSharedPreferenceChangeListener(this);
+//
+//		// mUSBManager = UsbManager.getInstance(this);
 		mUSBManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+//
+//		mSoundFiles = new ArrayList<String>();
 
-		mSoundFiles = new ArrayList<String>();
-
-		setUpButton(R.id.clock_button, R.drawable.ic_clock, R.string.clock);
-		setUpButton(R.id.alarm_button, R.drawable.ic_alarm, R.string.alarm);
-		setUpButton(R.id.volume_button, R.drawable.ic_volume, R.string.volume);
-		setUpButton(R.id.color_button, R.drawable.ic_color, R.string.color);
-		setUpButton(R.id.brightness_button, R.drawable.ic_brightness,
-				R.string.brightness);
-		setUpButton(R.id.display_button, R.drawable.ic_display,
-				R.string.display);
-		setUpButton(R.id.presets_button, R.drawable.ic_presets,
-				R.string.presets);
-		updateLockDisplay();
-
+//		updateLockDisplay();
+//
 		connectToAccessory();
-
-		startLicenseUpload();
+//
+//		startLicenseUpload();
 		sHomeActivity = this;
-
+//
 		startPollingSettings();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// MenuInflater inflater = getMenuInflater();
-		// inflater.inflate(R.menu.home_menu, menu);
-		return true;
-	}
+//	@Override
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		// MenuInflater inflater = getMenuInflater();
+//		// inflater.inflate(R.menu.home_menu, menu);
+//		return true;
+//	}
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -270,42 +263,7 @@ public class HomeActivity extends Activity implements OnClickListener,
 	}
 
 	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.clock_button:
-			// startActivity(new Intent(this, ClockActivity.class));
-			break;
-
-		case R.id.alarm_button:
-			// startActivity(new Intent(this, AlarmActivity.class));
-			break;
-
-		case R.id.volume_button:
-			// startActivity(new Intent(this, VolumeActivity.class));
-			break;
-
-		case R.id.color_button:
-			// startActivity(new Intent(this, ColorActivity.class));
-			break;
-
-		case R.id.brightness_button:
-			// startActivity(new Intent(this, BrightnessActivity.class));
-			break;
-
-		case R.id.display_button:
-			// startActivity(new Intent(this, DisplayActivity.class));
-			break;
-
-		case R.id.presets_button:
-//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-//				startActivity(new Intent(this, PresetsActivity.class));
-//			else
-//				showDialog(DIALOG_NO_PRESETS_ID);
-			break;
-
-		case R.id.lock_button:
-			toggleLock();
-			break;
-		}
+		// switch (v.getId()) {
 	}
 
 	private void toggleLock() {
@@ -375,8 +333,8 @@ public class HomeActivity extends Activity implements OnClickListener,
 		// sendCommand(CMD_ALARM_FILE, CMD_ALARM_FILE);
 		// listDirectory(TUNES_FOLDER);
 
-		Thread thread = new Thread(null, this, "ADK 2012");
-		thread.start();
+		// Thread thread = new Thread(null, this, "ADK 2012");
+		// thread.start();
 	}
 
 	public void closeAccessory() {
@@ -392,6 +350,10 @@ public class HomeActivity extends Activity implements OnClickListener,
 		int ret = 0;
 		byte[] buffer = new byte[16384];
 		int bufferUsed = 0;
+		
+//		Intent connectIntent = new Intent(this, ConnectActivity.class);
+//		connectIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//		startActivity(connectIntent);
 
 		while (ret >= 0) {
 			try {
@@ -410,9 +372,6 @@ public class HomeActivity extends Activity implements OnClickListener,
 				break;
 			}
 		}
-		Intent connectIntent = new Intent(this, ConnectActivity.class);
-		connectIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		startActivity(connectIntent);
 	}
 
 	public int process(byte[] buffer, int bufferUsed) {
@@ -720,11 +679,11 @@ public class HomeActivity extends Activity implements OnClickListener,
 	}
 
 	private void updateLockDisplay() {
-		boolean isLocked = mPreferences.getBoolean(Preferences.PREF_LOCKED,
-				false);
-		setUpButton(R.id.lock_button, isLocked ? R.drawable.ic_lock
-				: R.drawable.ic_unlock, isLocked ? R.string.locked
-				: R.string.unlocked);
+//		boolean isLocked = mPreferences.getBoolean(Preferences.PREF_LOCKED,
+//				false);
+//		setUpButton(R.id.lock_button, isLocked ? R.drawable.ic_lock
+//				: R.drawable.ic_unlock, isLocked ? R.string.locked
+//				: R.string.unlocked);
 	}
 
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,

@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.google.android.apps.adk2.activity.HomeActivity;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
