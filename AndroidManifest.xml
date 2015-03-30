@@ -45,54 +45,6 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activity.AlarmActivity"
-            android:label="@string/alarm"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.ClockActivity"
-            android:label="@string/clock"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.VolumeActivity"
-            android:label="@string/volume"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.ColorActivity"
-            android:label="@string/color"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.ColorRGBActivity"
-            android:label="@string/color"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.ColorCameraActivity"
-            android:label="@string/color"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.ColorSensorActivity"
-            android:label="@string/color_sensor"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.ColorCombinationsActivity"
-            android:label="@string/color_combinations"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.BrightnessActivity"
-            android:label="@string/brightness"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.DisplayActivity"
-            android:label="@string/display"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.PresetsActivity"
-            android:label="@string/presets"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.LicenseActivity"
-            android:label="@string/licenses"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="USBAccessoryActivity"
             android:label="@string/app_long_name"
             android:launchMode="singleInstance"

@@ -276,8 +276,8 @@ public class HomeActivity extends Activity implements OnClickListener,
 	}
 
 	private void showLicenses() {
-		Intent showLicenseIntent = new Intent(this, LicenseActivity.class);
-		startActivity(showLicenseIntent);
+//		Intent showLicenseIntent = new Intent(this, LicenseActivity.class);
+//		startActivity(showLicenseIntent);
 	}
 
 	private void startLicenseUpload() {
@@ -326,34 +326,34 @@ public class HomeActivity extends Activity implements OnClickListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.clock_button:
-			startActivity(new Intent(this, ClockActivity.class));
+			// startActivity(new Intent(this, ClockActivity.class));
 			break;
 
 		case R.id.alarm_button:
-			startActivity(new Intent(this, AlarmActivity.class));
+			// startActivity(new Intent(this, AlarmActivity.class));
 			break;
 
 		case R.id.volume_button:
-			startActivity(new Intent(this, VolumeActivity.class));
+			// startActivity(new Intent(this, VolumeActivity.class));
 			break;
 
 		case R.id.color_button:
-			startActivity(new Intent(this, ColorActivity.class));
+			// startActivity(new Intent(this, ColorActivity.class));
 			break;
 
 		case R.id.brightness_button:
-			startActivity(new Intent(this, BrightnessActivity.class));
+			// startActivity(new Intent(this, BrightnessActivity.class));
 			break;
 
 		case R.id.display_button:
-			startActivity(new Intent(this, DisplayActivity.class));
+			// startActivity(new Intent(this, DisplayActivity.class));
 			break;
 
 		case R.id.presets_button:
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				startActivity(new Intent(this, PresetsActivity.class));
-			else
-				showDialog(DIALOG_NO_PRESETS_ID);
+//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+//				startActivity(new Intent(this, PresetsActivity.class));
+//			else
+//				showDialog(DIALOG_NO_PRESETS_ID);
 			break;
 
 		case R.id.lock_button:
@@ -423,11 +423,11 @@ public class HomeActivity extends Activity implements OnClickListener,
 	}
 
 	private void performPostConnectionTasks() {
-		sendCommand(CMD_GET_PROTO_VERSION, CMD_GET_PROTO_VERSION);
-		sendCommand(CMD_SETTINGS, CMD_SETTINGS);
-		sendCommand(CMD_BT_NAME, CMD_BT_NAME);
-		sendCommand(CMD_ALARM_FILE, CMD_ALARM_FILE);
-		listDirectory(TUNES_FOLDER);
+		// sendCommand(CMD_GET_PROTO_VERSION, CMD_GET_PROTO_VERSION);
+		// sendCommand(CMD_SETTINGS, CMD_SETTINGS);
+		// sendCommand(CMD_BT_NAME, CMD_BT_NAME);
+		// sendCommand(CMD_ALARM_FILE, CMD_ALARM_FILE);
+		// listDirectory(TUNES_FOLDER);
 
 		Thread thread = new Thread(null, this, "ADK 2012");
 		thread.start();

@@ -14,6 +14,7 @@
     <string name="color_combinations">Color combinations</string>
     <string name="brightness">Brightness</string>
     <string name="bluetooth">Use Bluetooth</string>
+    <string name="send_command">Send Command</string>
     <string name="display">Display</string>
     <string name="presets">Presets</string>
     <string name="locked">Locked</string>

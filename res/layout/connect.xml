@@ -5,11 +5,6 @@
     android:orientation="vertical"
     android:padding="5dp" >
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,43 +12,34 @@
         android:text="@string/connect_please"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <View
+    <EditText
+        android:id="@+id/editText1"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:contentDescription="@string/adk_description"
-        android:src="@drawable/adk_outline" />
+        android:ems="10"
+        android:inputType="text"
+        android:singleLine="true" >
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        <requestFocus />
 
-     <TextView
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_gravity="center_horizontal"
-         android:text="@string/plug_in_or_use_bluetooth"
-         android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+    </EditText>
 
     <Button
         android:id="@+id/connect_bluetooth_button"
         android:layout_width="match_parent"
-        android:layout_height="80dip"
-        android:layout_margin="25dip"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/bluetooth" />
+        android:text="@string/send_command" />
+
+     <EditText
+         android:id="@+id/editText2"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:ems="10"
+         android:inputType="none"
+         android:singleLine="true" >
+
+     </EditText>     
 
     <View
         android:layout_width="match_parent"
