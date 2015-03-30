@@ -19,7 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 
@@ -27,7 +27,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;	/* new */
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -54,7 +54,7 @@ import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 
 import com.google.android.apps.adk2.ADK;
-import com.google.android.apps.adk2.BTConnection;
+// import com.google.android.apps.adk2.BTConnection;
 import com.google.android.apps.adk2.Connection;
 import com.google.android.apps.adk2.Preferences;
 import com.google.android.apps.adk2.R;
@@ -128,7 +128,7 @@ public class HomeActivity extends Activity implements OnClickListener,
 
 	private static HomeActivity sHomeActivity = null;
 
-	private static String curBtName = "<UNKNOWN>";
+	// private static String curBtName = "<UNKNOWN>";
 
 	public static HomeActivity get() {
 		return sHomeActivity;
@@ -186,8 +186,8 @@ public class HomeActivity extends Activity implements OnClickListener,
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.home_menu, menu);
+		// MenuInflater inflater = getMenuInflater();
+		// inflater.inflate(R.menu.home_menu, menu);
 		return true;
 	}
 
@@ -202,69 +202,20 @@ public class HomeActivity extends Activity implements OnClickListener,
 		return dialog;
 	}
 
-	private void changeBtName() {
-
-		// This example shows how to add a custom layout to an AlertDialog
-		LayoutInflater factory = LayoutInflater.from(this);
-		final View textEntryView = factory.inflate(R.layout.alert_dialog, null);
-		final EditText e = (EditText) textEntryView
-				.findViewById(R.id.btname_edit);
-
-		AlertDialog ad = new AlertDialog.Builder(this)
-				.setIconAttribute(android.R.attr.alertDialogIcon)
-				.setTitle("Set ADK Bluetooth Name")
-				.setView(textEntryView)
-				.setPositiveButton(R.string.set_bt_name_ok,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-
-								curBtName = e.getText().toString();
-								if (curBtName.equals(""))
-									curBtName = "ADK 2012";
-
-								byte b[] = null;
-								try {
-									b = curBtName.getBytes("UTF-8");
-								} catch (UnsupportedEncodingException e1) {
-									// well aren't you SOL....
-									e1.printStackTrace();
-								}
-								byte b2[] = new byte[b.length + 1];
-								for (int i = 0; i < b.length; i++)
-									b2[i] = b[i];
-								b2[b.length] = 0;
-
-								sendCommand(CMD_BT_NAME, CMD_BT_NAME, b2);
-							}
-						})
-				.setNegativeButton(R.string.set_bt_name_cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-
-								// user cancels
-							}
-						}).create();
-
-		e.setText(curBtName);
-		ad.show();
-	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.license_menu:
-			showLicenses();
-			return true;
-
-		case R.id.disconnect_menu:
-			disconnect();
-			return true;
-
-		case R.id.change_bt_name:
-			changeBtName();
-			return true;
+//		case R.id.license_menu:
+//			showLicenses();
+//			return true;
+//
+//		case R.id.disconnect_menu:
+//			disconnect();
+//			return true;
+//
+//		case R.id.change_bt_name:
+//			changeBtName();
+//			return true;
 
 		default:
 			return false;
@@ -273,11 +224,6 @@ public class HomeActivity extends Activity implements OnClickListener,
 
 	private void disconnect() {
 		finish();
-	}
-
-	private void showLicenses() {
-//		Intent showLicenseIntent = new Intent(this, LicenseActivity.class);
-//		startActivity(showLicenseIntent);
 	}
 
 	private void startLicenseUpload() {
@@ -383,13 +329,13 @@ public class HomeActivity extends Activity implements OnClickListener,
 		if (mConnection != null)
 			return;
 
-		if (getIntent().hasExtra(BTDeviceListActivity.EXTRA_DEVICE_ADDRESS)) {
-			String address = getIntent().getStringExtra(
-					BTDeviceListActivity.EXTRA_DEVICE_ADDRESS);
-			Log.i(ADK.TAG, "want to connect to " + address);
-			mConnection = new BTConnection(address);
-			performPostConnectionTasks();
-		} else {
+//		if (getIntent().hasExtra(BTDeviceListActivity.EXTRA_DEVICE_ADDRESS)) {
+//			String address = getIntent().getStringExtra(
+//					BTDeviceListActivity.EXTRA_DEVICE_ADDRESS);
+//			Log.i(ADK.TAG, "want to connect to " + address);
+//			mConnection = new BTConnection(address);
+//			performPostConnectionTasks();
+//		} else {
 			// assume only one accessory (currently safe assumption)
 			UsbAccessory[] accessories = mUSBManager.getAccessoryList();
 			UsbAccessory accessory = (accessories == null ? null
@@ -409,7 +355,7 @@ public class HomeActivity extends Activity implements OnClickListener,
 			} else {
 				// Log.d(TAG, "mAccessory is null");
 			}
-		}
+//		}
 
 	}
 
@@ -545,7 +491,7 @@ public class HomeActivity extends Activity implements OnClickListener,
 			for (int i = 0; i < settingsBytes.length - 1; i++)
 				b[i] = settingsBytes[i];
 
-			curBtName = new String(b);
+			// curBtName = new String(b);
 		}
 	}
 

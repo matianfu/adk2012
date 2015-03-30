@@ -36,10 +36,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.BTDeviceListActivity"
-            android:label="@string/bluetooth"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activity.HomeActivity"
             android:label="@string/app_short_name"
             android:screenOrientation="portrait" >

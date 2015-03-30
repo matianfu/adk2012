@@ -36,7 +36,7 @@ public class ConnectActivity extends Activity implements OnClickListener {
 
 	public void onClick(View v) {
 		if (v.getId() == R.id.connect_bluetooth_button) {
-			startActivity(new Intent(this, BTDeviceListActivity.class));
+			// startActivity(new Intent(this, BTDeviceListActivity.class));
 		}
 	}
 
