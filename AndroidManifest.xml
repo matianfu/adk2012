@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE xml>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.google.android.apps.adk2"
     android:versionCode="1"
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="10"
-        android:targetSdkVersion="15" />
+        android:minSdkVersion="12"
+        android:targetSdkVersion="22" />
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -18,6 +19,7 @@
 
     <application
         android:hardwareAccelerated="true"
+        android:allowBackup="true"
         android:icon="@drawable/ic_launcher_adk"
         android:label="@string/app_short_name"
         android:theme="@style/Theme.ADK2" >

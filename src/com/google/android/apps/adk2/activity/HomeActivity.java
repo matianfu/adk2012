@@ -26,6 +26,7 @@ import java.util.zip.GZIPInputStream;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;	/* new */
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,8 +48,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.future.usb.UsbAccessory;
-import com.android.future.usb.UsbManager;
+// import com.android.future.usb.UsbAccessory;
+import android.hardware.usb.UsbAccessory;
+// import com.android.future.usb.UsbManager;
+import android.hardware.usb.UsbManager;
+
 import com.google.android.apps.adk2.ADK;
 import com.google.android.apps.adk2.BTConnection;
 import com.google.android.apps.adk2.Connection;
@@ -155,7 +159,8 @@ public class HomeActivity extends Activity implements OnClickListener,
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mPreferences.registerOnSharedPreferenceChangeListener(this);
 
-		mUSBManager = UsbManager.getInstance(this);
+		// mUSBManager = UsbManager.getInstance(this);
+		mUSBManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
 		mSoundFiles = new ArrayList<String>();
 
