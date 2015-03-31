@@ -87,20 +87,20 @@ public class Utilities {
 		return df.format(dateToFormat);
 	}
 
-	public static String formatTime(Context context, int timeValue) {
-		Date date = new Date();
-		date.setHours(timeValue / 60);
-		date.setMinutes(timeValue % 60);
-		return formatTime(context, date);
-	}
+//	public static String formatTime(Context context, int timeValue) {
+//		Date date = new Date();
+//		date.setHours(timeValue / 60);
+//		date.setMinutes(timeValue % 60);
+//		return formatTime(context, date);
+//	}
 
-	public static int dateToTimeValue(int hours, int minutes) {
-		return hours * 60 + minutes;
-	}
+//	public static int dateToTimeValue(int hours, int minutes) {
+//		return hours * 60 + minutes;
+//	}
 
-	public static int dateToTimeValue(Date date) {
-		return dateToTimeValue(date.getHours(), date.getMinutes());
-	}
+//	public static int dateToTimeValue(Date date) {
+//		return dateToTimeValue(date.getHours(), date.getMinutes());
+//	}
 
 	private static final byte[] HEX_CHAR = new byte[] { '0', '1', '2', '3',
 			'4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };

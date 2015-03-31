@@ -16,36 +16,34 @@
 package com.google.android.apps.adk2.activity;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+// import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.zip.GZIPInputStream;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;	/* new */
+import android.content.BroadcastReceiver;
+import android.content.Context; /* new */
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.Build;
+import android.content.IntentFilter;
+//import android.content.Intent;
+//import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ParcelFileDescriptor;
 import android.os.Handler.Callback;
 import android.os.Message;
-import android.preference.PreferenceManager;
+// import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+//import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
+//import android.widget.Button;
+//import android.widget.EditText;
+//import android.widget.ImageView;
+//import android.widget.TextView;
 
 // import com.android.future.usb.UsbAccessory;
 import android.hardware.usb.UsbAccessory;
@@ -53,74 +51,24 @@ import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 
 import com.google.android.apps.adk2.ADK;
-// import com.google.android.apps.adk2.BTConnection;
-import com.google.android.apps.adk2.Connection;
-import com.google.android.apps.adk2.Preferences;
 import com.google.android.apps.adk2.R;
-import com.google.android.apps.adk2.UsbConnection;
 import com.google.android.apps.adk2.Utilities;
 
 public class HomeActivity extends Activity implements OnClickListener,
-		Callback, OnSharedPreferenceChangeListener, Runnable {
+		Callback, Runnable {
 
 	private Handler mDeviceHandler;
 	private Handler mSettingsPollingHandler;
-
 	private UsbManager mUSBManager;
-	// private SharedPreferences mPreferences;
-	// private Button mBluetoothButton;
+	private UsbAccessory mAccessory;
 
-	private ByteArrayOutputStream mLicenseTextStream;
+	private FileInputStream mInputStream;
+	private FileOutputStream mOutputStream;
+	private ParcelFileDescriptor mFileDescriptor;
 
-	private byte[] mSettingsBuffer = null;
-	private byte[] mSettingsPayload = new byte[8];
-//	private byte[] mQueryBuffer = new byte[4];
-//	private byte[] mEmptyPayload = new byte[0];
-
-	Connection mConnection;
-
-	UsbAccessory mAccessory;
-
-	private boolean mIgnorePrefChanges = false;
 	private boolean mPollSettings = false;
 
-	private long mIgnoreUpdatesUntil = System.currentTimeMillis();
-
-	private String mLicenseText = "";
-	private ArrayList<String> mSoundFiles;
-
-	static final String TUNES_FOLDER = "/Tunes";
-
-	static final byte CMD_GET_PROTO_VERSION = 1; // () -> (u8 protocolVersion)
-	static final byte CMD_GET_SENSORS = 2; // () -> (sensors:
-											// i32,i32,i32,i32,u16,u16,u16,u16,u16,u16,u16,i16,i16,i16,i16,i16,i16)
-	static final byte CMD_FILE_LIST = 3; // FIRST: (char name[]) -> (fileinfo or
-											// single zero byte) OR NONLATER: ()
-											// -> (fileinfo or empty or single
-											// zero byte)
-	static final byte CMD_FILE_DELETE = 4; // (char name[0-255)) -> (char
-											// success)
-	static final byte CMD_FILE_OPEN = 5; // (char name[0-255]) -> (char success)
-	static final byte CMD_FILE_WRITE = 6; // (u8 data[]) -> (char success)
-	static final byte CMD_FILE_CLOSE = 7; // () -> (char success)
-	static final byte CMD_GET_UNIQ_ID = 8; // () -> (u8 uniq[16])
-	static final byte CMD_BT_NAME = 9; // (char name[]) -> () OR () -> (char
-										// name[])
-	static final byte CMD_BT_PIN = 10; // (char PIN[]) -> () OR () -> (char
-										// PIN[])
-	static final byte CMD_TIME = 11; // (timespec) -> (char success)) OR () >
-										// (timespec)
-	static final byte CMD_SETTINGS = 12; // () ->
-											// (alarm:u8,u8,u8,brightness:u8,color:u8,u8,u8:volume:u8)
-											// or
-											// (alarm:u8,u8,u8,brightness:u8,color:u8,u8,u8:volume:u8)
-											// > (char success)
-	static final byte CMD_ALARM_FILE = 13; // () -> (char file[0-255]) OR (char
-											// file[0-255]) > (char success)
-	static final byte CMD_GET_LICENSE = 14; // () -> (u8 licensechunk[]) OR ()
-											// if last sent
-	static final byte CMD_DISPLAY_MODE = 15; // () -> (u8) OR (u8) -> ()
-	static final byte CMD_LOCK = 16; // () -> (u8) OR (u8) -> ()
+	private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";
 
 	private static final boolean gLogPackets = true;
 
@@ -128,7 +76,21 @@ public class HomeActivity extends Activity implements OnClickListener,
 
 	private static HomeActivity sHomeActivity = null;
 
-	// private static String curBtName = "<UNKNOWN>";
+	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
+				// UsbAccessory accessory = UsbManager.getAccessory(intent);
+				UsbAccessory accessory = (UsbAccessory) intent
+						.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+				if (accessory != null && accessory.equals(mAccessory)) {
+					Log.i(ADK.TAG, "Accessory Detached");
+					closeAccessory();
+				}
+			}
+		}
+	};
 
 	public static HomeActivity get() {
 		return sHomeActivity;
@@ -148,88 +110,59 @@ public class HomeActivity extends Activity implements OnClickListener,
 	}
 
 	@Override
+	protected void onNewIntent(Intent intent) {
+
+		Log.i(ADK.TAG, "onNewIntent, new intent received");
+		String action = intent.getAction();
+		if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(action)) {
+			UsbAccessory accessory = (UsbAccessory) intent
+					.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+			if (accessory != null) {
+				Log.i(ADK.TAG, "Accessory Attached");
+				openAccessory(accessory);
+			}
+		}
+	}
+
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		Log.i(ADK.TAG, "HomeActivity OnCreate");
+
+		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_ATTACHED);
+		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
+		registerReceiver(mUsbReceiver, filter);
+
+		Log.i(ADK.TAG, "Broadcast receiver registered");
+
 		setContentView(R.layout.home);
-//		setContentView(R.layout.connect);
-//		mBluetoothButton = (Button) findViewById(R.id.connect_bluetooth_button);
-//		mBluetoothButton.setOnClickListener(this);
+		// setContentView(R.layout.connect);
+		// mBluetoothButton = (Button)
+		// findViewById(R.id.connect_bluetooth_button);
+		// mBluetoothButton.setOnClickListener(this);
 
 		mDeviceHandler = new Handler(this);
 		mSettingsPollingHandler = new Handler(this);
-//
-//		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-//		mPreferences.registerOnSharedPreferenceChangeListener(this);
-//
-//		// mUSBManager = UsbManager.getInstance(this);
-		mUSBManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-//
-//		mSoundFiles = new ArrayList<String>();
 
-//		updateLockDisplay();
-//
+		// // mUSBManager = UsbManager.getInstance(this);
+		mUSBManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+
 		connectToAccessory();
-//
-//		startLicenseUpload();
 		sHomeActivity = this;
-//
 		startPollingSettings();
 	}
 
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		// MenuInflater inflater = getMenuInflater();
-//		// inflater.inflate(R.menu.home_menu, menu);
-//		return true;
-//	}
-
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		Dialog dialog = null;
-		if (id == DIALOG_NO_PRESETS_ID) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage("Unsupported feature.");
-			dialog = builder.create();
-		}
-		return dialog;
-	}
-
-//	@Override
-//	public boolean onOptionsItemSelected(MenuItem item) {
-//		switch (item.getItemId()) {
-////		case R.id.license_menu:
-////			showLicenses();
-////			return true;
-////
-////		case R.id.disconnect_menu:
-////			disconnect();
-////			return true;
-////
-////		case R.id.change_bt_name:
-////			changeBtName();
-////			return true;
-//
-//		default:
-//			return false;
-//		}
-//	}
-
-	private void disconnect() {
-		finish();
-	}
-
-//	private void startLicenseUpload() {
-//		Log.i(ADK.TAG, "startLicenseUpload");
-//		mLicenseTextStream = new ByteArrayOutputStream();
-//		sendCommand(CMD_GET_LICENSE, 33);
-//	}
+	// private void disconnect() {
+	// finish();
+	// }
 
 	private void pollSettings() {
 		if (mPollSettings) {
-			sendCommand(CMD_SETTINGS, CMD_SETTINGS);
-			sendCommand(CMD_DISPLAY_MODE, CMD_DISPLAY_MODE);
-			sendCommand(CMD_LOCK, CMD_LOCK);
+			// sendCommand(CMD_SETTINGS, CMD_SETTINGS);
+			// sendCommand(CMD_DISPLAY_MODE, CMD_DISPLAY_MODE);
+			// sendCommand(CMD_LOCK, CMD_LOCK);
 			Message msg = mSettingsPollingHandler.obtainMessage(99);
 			if (!mSettingsPollingHandler.sendMessageDelayed(msg, 500)) {
 				Log.e(ADK.TAG, "faled to queue settings message");
@@ -251,14 +184,7 @@ public class HomeActivity extends Activity implements OnClickListener,
 	@Override
 	public void onDestroy() {
 		sHomeActivity = null;
-		if (mConnection != null) {
-			try {
-				mConnection.close();
-			} catch (IOException e) {
-			} finally {
-				mConnection = null;
-			}
-		}
+		closeAccessory();
 		super.onDestroy();
 	}
 
@@ -266,55 +192,30 @@ public class HomeActivity extends Activity implements OnClickListener,
 		// switch (v.getId()) {
 	}
 
-//	private void toggleLock() {
-//		boolean isLocked = mPreferences.getBoolean(Preferences.PREF_LOCKED,
-//				false);
-//		boolean newLocked = !isLocked;
-//		SharedPreferences.Editor editor = mPreferences.edit();
-//		editor.putBoolean(Preferences.PREF_LOCKED, newLocked);
-//		editor.commit();
-//	}
-
-//	private void setUpButton(int buttonID, int iconID, int labelID) {
-//		View button = findViewById(buttonID);
-//		button.setOnClickListener(this);
-//		((ImageView) button.findViewById(R.id.icon)).setImageResource(iconID);
-//		((TextView) button.findViewById(R.id.label)).setText(labelID);
-//	}
-
 	public void connectToAccessory() {
 		// bail out if we're already connected
-		if (mConnection != null)
+		if (mAccessory != null) {
+			Log.i(ADK.TAG, "connectToAccessory, mAccessory not null, already connected.");
 			return;
+		}
 
-//		if (getIntent().hasExtra(BTDeviceListActivity.EXTRA_DEVICE_ADDRESS)) {
-//			String address = getIntent().getStringExtra(
-//					BTDeviceListActivity.EXTRA_DEVICE_ADDRESS);
-//			Log.i(ADK.TAG, "want to connect to " + address);
-//			mConnection = new BTConnection(address);
-//			performPostConnectionTasks();
-//		} else {
-			// assume only one accessory (currently safe assumption)
-			UsbAccessory[] accessories = mUSBManager.getAccessoryList();
-			UsbAccessory accessory = (accessories == null ? null
-					: accessories[0]);
-			if (accessory != null) {
-				if (mUSBManager.hasPermission(accessory)) {
-					openAccessory(accessory);
-				} else {
-					// synchronized (mUsbReceiver) {
-					// if (!mPermissionRequestPending) {
-					// mUsbManager.requestPermission(accessory,
-					// mPermissionIntent);
-					// mPermissionRequestPending = true;
-					// }
-					// }
-				}
+		UsbAccessory[] accessories = mUSBManager.getAccessoryList();
+		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
+		if (accessory != null) {
+			if (mUSBManager.hasPermission(accessory)) {
+				openAccessory(accessory);
 			} else {
-				// Log.d(TAG, "mAccessory is null");
+				// synchronized (mUsbReceiver) {
+				// if (!mPermissionRequestPending) {
+				// mUsbManager.requestPermission(accessory,
+				// mPermissionIntent);
+				// mPermissionRequestPending = true;
+				// }
+				// }
 			}
-//		}
-
+		} else {
+			Log.i(ADK.TAG, "accessory is null");
+		}
 	}
 
 	public void disconnectFromAccessory() {
@@ -322,118 +223,147 @@ public class HomeActivity extends Activity implements OnClickListener,
 	}
 
 	private void openAccessory(UsbAccessory accessory) {
-		mConnection = new UsbConnection(this, mUSBManager, accessory);
-		performPostConnectionTasks();
+
+		mFileDescriptor = mUSBManager.openAccessory(accessory);
+
+		if (mFileDescriptor != null) {
+			mAccessory = accessory;
+
+			FileDescriptor fd = mFileDescriptor.getFileDescriptor();
+			mInputStream = new FileInputStream(fd);
+			mOutputStream = new FileOutputStream(fd);
+
+			mAccessory = accessory;
+		}
+
+		// performPostConnectionTasks();
 	}
 
-	private void performPostConnectionTasks() {
-		byte[] buffer = new byte[100];
-		buffer[0] = (byte)((int)1 & 0xFF);
-		buffer[1] = (byte)((int)2 & 0xFF);
-		buffer[2] = (byte)((int)3 & 0xFF);
-		buffer[3] = (byte)((int)4 & 0xFF);
-		buffer[4] = (byte)((int)5 & 0xFF);
-		buffer[5] = (byte)((int)6 & 0xFF);
-		buffer[6] = (byte)((int)7 & 0xFF);
-		buffer[7] = (byte)((int)8 & 0xFF);
-		buffer[8] = (byte)((int)9 & 0xFF);
-		buffer[9] = (byte)((int)10 & 0xFF);
+	private void closeAccessory() {
 
-		try{
-			mConnection.getOutputStream().write(buffer, 0, 10);
+		if (mInputStream != null) {
+			try {
+				mInputStream.close();
+			} catch (IOException e) {
+			} finally {
+				mInputStream = null;
+			}
 		}
-		catch(IOException e)
-		{
-			
-		}		
-		
-		buffer[10] = (byte)((int)1 & 0xFF);
-		buffer[11] = (byte)((int)2 & 0xFF);
-		buffer[12] = (byte)((int)3 & 0xFF);
-		buffer[13] = (byte)((int)4 & 0xFF);
-		buffer[14] = (byte)((int)5 & 0xFF);
-		buffer[15] = (byte)((int)6 & 0xFF);
-		buffer[16] = (byte)((int)7 & 0xFF);
-		buffer[17] = (byte)((int)8 & 0xFF);
-		buffer[18] = (byte)((int)9 & 0xFF);
-		buffer[19] = (byte)((int)10 & 0xFF);
-		
-		try{
-			mConnection.getOutputStream().write(buffer, 10, 10);
-		}
-		catch(IOException e)
-		{
-			
-		}		
-		
-		buffer[20] = (byte)11;
-		buffer[21] = (byte)12;
-		buffer[22] = (byte)13;
-		buffer[23] = (byte)14;
-		buffer[24] = (byte)15;
-		buffer[25] = (byte)16;
-		buffer[26] = (byte)17;
-		buffer[27] = (byte)18;
-		buffer[28] = (byte)19;
-		buffer[29] = (byte)20;
-		
-		try{
-			mConnection.getOutputStream().write(buffer, 20, 10);
-		}
-		catch(IOException e)
-		{
-			
-		}
-		
-		int i;
-		
-		for (i = 0; i < 100; i++)
-		{
-			buffer[i] = (byte)i;
-		}
-		try{
-			mConnection.getOutputStream().write(buffer, 10, 32);
-			mConnection.getOutputStream().write(buffer, 12, 32);
-			mConnection.getOutputStream().write(buffer, 14, 32);
-			mConnection.getOutputStream().write(buffer, 16, 32);
-			mConnection.getOutputStream().write(buffer, 18, 32);
-		}
-		catch(IOException e)
-		{
-			
-		}
-//		 sendCommand(CMD_GET_PROTO_VERSION, CMD_GET_PROTO_VERSION);
-//		 sendCommand(CMD_SETTINGS, CMD_SETTINGS);
-//		 sendCommand(CMD_BT_NAME, CMD_BT_NAME);
-//		 sendCommand(CMD_ALARM_FILE, CMD_ALARM_FILE);
-		// listDirectory(TUNES_FOLDER);
 
-		// Thread thread = new Thread(null, this, "ADK 2012");
-		// thread.start();
+		if (mOutputStream != null) {
+			try {
+				mOutputStream.close();
+			} catch (IOException e) {
+			} finally {
+				mOutputStream = null;
+			}
+		}
+
+		if (mFileDescriptor != null) {
+			try {
+				mFileDescriptor.close();
+			} catch (IOException e) {
+			} finally {
+				mFileDescriptor = null;
+			}
+		}
 	}
 
-	public void closeAccessory() {
-		try {
-			mConnection.close();
-		} catch (IOException e) {
-		} finally {
-			mConnection = null;
-		}
-	}
+	// private void performPostConnectionTasks() {
+	// byte[] buffer = new byte[100];
+	// buffer[0] = (byte)((int)1 & 0xFF);
+	// buffer[1] = (byte)((int)2 & 0xFF);
+	// buffer[2] = (byte)((int)3 & 0xFF);
+	// buffer[3] = (byte)((int)4 & 0xFF);
+	// buffer[4] = (byte)((int)5 & 0xFF);
+	// buffer[5] = (byte)((int)6 & 0xFF);
+	// buffer[6] = (byte)((int)7 & 0xFF);
+	// buffer[7] = (byte)((int)8 & 0xFF);
+	// buffer[8] = (byte)((int)9 & 0xFF);
+	// buffer[9] = (byte)((int)10 & 0xFF);
+	//
+	// try{
+	// mConnection.getOutputStream().write(buffer, 0, 10);
+	// }
+	// catch(IOException e)
+	// {
+	//
+	// }
+	//
+	// buffer[10] = (byte)((int)1 & 0xFF);
+	// buffer[11] = (byte)((int)2 & 0xFF);
+	// buffer[12] = (byte)((int)3 & 0xFF);
+	// buffer[13] = (byte)((int)4 & 0xFF);
+	// buffer[14] = (byte)((int)5 & 0xFF);
+	// buffer[15] = (byte)((int)6 & 0xFF);
+	// buffer[16] = (byte)((int)7 & 0xFF);
+	// buffer[17] = (byte)((int)8 & 0xFF);
+	// buffer[18] = (byte)((int)9 & 0xFF);
+	// buffer[19] = (byte)((int)10 & 0xFF);
+	//
+	// try{
+	// mConnection.getOutputStream().write(buffer, 10, 10);
+	// }
+	// catch(IOException e)
+	// {
+	//
+	// }
+	//
+	// buffer[20] = (byte)11;
+	// buffer[21] = (byte)12;
+	// buffer[22] = (byte)13;
+	// buffer[23] = (byte)14;
+	// buffer[24] = (byte)15;
+	// buffer[25] = (byte)16;
+	// buffer[26] = (byte)17;
+	// buffer[27] = (byte)18;
+	// buffer[28] = (byte)19;
+	// buffer[29] = (byte)20;
+	//
+	// try{
+	// mConnection.getOutputStream().write(buffer, 20, 10);
+	// }
+	// catch(IOException e)
+	// {
+	//
+	// }
+	//
+	// int i;
+	//
+	// for (i = 0; i < 100; i++)
+	// {
+	// buffer[i] = (byte)i;
+	// }
+	// try{
+	// mConnection.getOutputStream().write(buffer, 10, 32);
+	// mConnection.getOutputStream().write(buffer, 12, 32);
+	// mConnection.getOutputStream().write(buffer, 14, 32);
+	// mConnection.getOutputStream().write(buffer, 16, 32);
+	// mConnection.getOutputStream().write(buffer, 18, 32);
+	// }
+	// catch(IOException e)
+	// {
+	//
+	// }
+	// // sendCommand(CMD_GET_PROTO_VERSION, CMD_GET_PROTO_VERSION);
+	// // sendCommand(CMD_SETTINGS, CMD_SETTINGS);
+	// // sendCommand(CMD_BT_NAME, CMD_BT_NAME);
+	// // sendCommand(CMD_ALARM_FILE, CMD_ALARM_FILE);
+	// // listDirectory(TUNES_FOLDER);
+	//
+	// // Thread thread = new Thread(null, this, "ADK 2012");
+	// // thread.start();
+	// }
 
 	public void run() {
 		int ret = 0;
 		byte[] buffer = new byte[16384];
 		int bufferUsed = 0;
-		
-//		Intent connectIntent = new Intent(this, ConnectActivity.class);
-//		connectIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//		startActivity(connectIntent);
 
 		while (ret >= 0) {
 			try {
-				ret = mConnection.getInputStream().read(buffer, bufferUsed,
-						buffer.length - bufferUsed);
+				ret = mInputStream.read(buffer, bufferUsed, buffer.length
+						- bufferUsed);
 				bufferUsed += ret;
 				int remainder = process(buffer, bufferUsed);
 				if (remainder > 0) {
@@ -462,20 +392,6 @@ public class HomeActivity extends Activity implements OnClickListener,
 		return inputStream.available();
 	}
 
-	public void listDirectory(String path) {
-		mSoundFiles.clear();
-		byte[] payload = new byte[path.length() + 1];
-		for (int i = 0; i < path.length(); ++i) {
-			payload[i] = (byte) path.charAt(i);
-		}
-		payload[path.length()] = 0;
-		sendCommand(CMD_FILE_LIST, CMD_FILE_LIST, payload);
-	}
-
-	public void getSensors() {
-		sendCommand(CMD_GET_SENSORS, CMD_GET_SENSORS);
-	}
-
 	public byte[] sendCommand(int command, int sequence, byte[] payload,
 			byte[] buffer) {
 		int bufferLength = payload.length + 4;
@@ -492,7 +408,7 @@ public class HomeActivity extends Activity implements OnClickListener,
 		if (payload.length > 0) {
 			System.arraycopy(payload, 0, buffer, 4, payload.length);
 		}
-		if (mConnection != null && buffer[1] != -1) {
+		if (mOutputStream != null && buffer[1] != -1) {
 			try {
 				if (gLogPackets) {
 					Log.i(ADK.TAG,
@@ -500,7 +416,7 @@ public class HomeActivity extends Activity implements OnClickListener,
 									+ Utilities
 											.dumpBytes(buffer, buffer.length));
 				}
-				mConnection.getOutputStream().write(buffer);
+				mOutputStream.write(buffer);
 			} catch (IOException e) {
 				Log.e(ADK.TAG, "accessory write failed", e);
 			}
@@ -512,349 +428,110 @@ public class HomeActivity extends Activity implements OnClickListener,
 		sendCommand(command, sequence, payload, null);
 	}
 
-	private void sendCommand(int command, int sequence) {
-		// sendCommand(command, sequence, mEmptyPayload, mQueryBuffer);
-	}
+	// private void sendCommand(int command, int sequence) {
+	// // sendCommand(command, sequence, mEmptyPayload, mQueryBuffer);
+	// }
 
-	private void handleBtNameCommand(byte[] settingsBytes) {
-
-		if (settingsBytes.length > 1 || settingsBytes[0] == 0) { // it's a name
-																	// reply
-
-			byte[] b = new byte[settingsBytes.length - 1];
-			for (int i = 0; i < settingsBytes.length - 1; i++)
-				b[i] = settingsBytes[i];
-
-			// curBtName = new String(b);
-		}
-	}
-
-	private void handleSettingsCommand(byte[] settingsBytes) {
-
-		if (System.currentTimeMillis() < mIgnoreUpdatesUntil) {
-			return;
-		}
-
-		if (settingsBytes.length == 8) {
-			int settings[] = Utilities.byteArrayToIntArray(settingsBytes);
-			mIgnorePrefChanges = true;
-			SharedPreferences.Editor editor = PreferenceManager
-					.getDefaultSharedPreferences(this).edit();
-
-			// (alarm:u8,u8,u8,brightness:u8,color:u8,u8,u8:volume:u8)
-			int alarmTime = Utilities.dateToTimeValue(settings[0], settings[1]);
-			editor.putInt(Preferences.PREF_ALARM_TIME, alarmTime);
-			boolean alarmOn = (settings[2] != 0);
-			editor.putBoolean(Preferences.PREF_ALARM_ON, alarmOn);
-
-			editor.putInt(Preferences.PREF_BRIGHTNESS, settings[3]);
-
-			int color = settings[4] << 16 | settings[5] << 8 | settings[6];
-			editor.putInt(Preferences.PREF_COLOR, color);
-
-			int volume = settings[7];
-			editor.putInt(Preferences.PREF_VOLUME, volume);
-			editor.apply();
-
-			mIgnorePrefChanges = false;
-		}
-	}
-
-	private void handleLicenseTextCommand(byte[] licenseTextBytes) {
-		if (gLogPackets) {
-			Log.i(ADK.TAG, "License text chunk");
-			Log.i(ADK.TAG, Utilities.dumpBytes(licenseTextBytes,
-					licenseTextBytes.length));
-		}
-		if (licenseTextBytes.length > 1 && licenseTextBytes[0] != 0) {
-			mLicenseTextStream.write(licenseTextBytes, 1,
-					licenseTextBytes.length - 1);
-			sendCommand(CMD_GET_LICENSE, 33);
-		} else {
-
-			try {
-				mLicenseTextStream.close();
-				byte[] encodedArray = mLicenseTextStream.toByteArray();
-				GZIPInputStream gis = new GZIPInputStream(
-						new ByteArrayInputStream(encodedArray));
-				byte[] decodedBuffer = new byte[128 * 1024]; // TODO: make this
-																// buffer
-																// smaller
-				while (true) {
-					int length = gis.read(decodedBuffer);
-					if (length < 1) {
-						SharedPreferences.Editor editor = PreferenceManager
-								.getDefaultSharedPreferences(this).edit();
-						editor.putString(Preferences.PREF_LICENSE_TEXT,
-								mLicenseText);
-						editor.commit();
-						mLicenseText = "";
-						break;
-					}
-					mLicenseText = mLicenseText
-							+ new String(decodedBuffer, 0, length, "utf-8");
-				}
-			} catch (IOException e) {
-				Log.i(ADK.TAG, "error = " + e.toString());
-			}
-		}
-	}
-
-	private void handleFileListCommand(byte[] fileListBytes) {
-		if (gLogPackets)
-			Log.i(ADK.TAG,
-					"handleFileListCommand: "
-							+ Utilities.dumpBytes(fileListBytes,
-									fileListBytes.length));
-		if (fileListBytes.length == 1 && fileListBytes[0] == 0) {
-			return;
-		}
-		if (fileListBytes.length > 6) {
-			String fileName = new String(fileListBytes, 5,
-					fileListBytes.length - 6);
-			if (gLogPackets)
-				Log.i(ADK.TAG, "got file name '" + fileName + "'");
-			mSoundFiles.add(fileName);
-		}
-		sendCommand(CMD_FILE_LIST, CMD_FILE_LIST);
-
-	}
-
-	private void handleAlarmFileCommand(byte[] alarmFileNameBytes) {
-		if (alarmFileNameBytes.length > 1) {
-			mIgnorePrefChanges = true;
-			SharedPreferences.Editor editor = PreferenceManager
-					.getDefaultSharedPreferences(this).edit();
-			String alarmFileName = new String(alarmFileNameBytes, 0,
-					alarmFileNameBytes.length - 1);
-			alarmFileName = alarmFileName.replaceFirst("(?i)" + TUNES_FOLDER
-					+ "/", "");
-			editor.putString(Preferences.PREF_ALARM_SOUND, alarmFileName);
-			editor.apply();
-			mIgnorePrefChanges = false;
-		}
-	}
-
-	private void handleGetSensorsCommand(byte[] sensorBytes) {
-		if (gLogPackets)
-			Log.i(ADK.TAG,
-					"handleGetSensorsCommand: "
-							+ Utilities.dumpBytes(sensorBytes,
-									sensorBytes.length));
-		if (sensorBytes.length > 23) {
-			int sensorValues[] = Utilities.byteArrayToIntArray(sensorBytes);
-			int proxNormalized[] = {
-					sensorValues[20] | (sensorValues[21] << 8),
-					sensorValues[22] | (sensorValues[23] << 8),
-					sensorValues[24] | (sensorValues[25] << 8) };
-			proxNormalized[2] *= 3;
-			// find max
-			int proxMax = 0;
-			for (int i = 0; i < 3; i++)
-				if (proxMax < proxNormalized[i])
-					proxMax = proxNormalized[i];
-			proxMax++;
-			// normalize to 8-bits
-			for (int i = 0; i < 3; i++)
-				proxNormalized[i] = (proxNormalized[i] << 8) / proxMax;
-			final int exp[] = { 0, 19, 39, 59, 79, 100, 121, 143, 165, 187,
-					209, 232, 255, 279, 303, 327, 352, 377, 402, 428, 454, 481,
-					508, 536, 564, 592, 621, 650, 680, 710, 741, 772, 804, 836,
-					869, 902, 936, 970, 1005, 1040, 1076, 1113, 1150, 1187,
-					1226, 1264, 1304, 1344, 1385, 1426, 1468, 1511, 1554, 1598,
-					1643, 1688, 1734, 1781, 1829, 1877, 1926, 1976, 2026, 2078,
-					2130, 2183, 2237, 2292, 2348, 2404, 2461, 2520, 2579, 2639,
-					2700, 2762, 2825, 2889, 2954, 3020, 3088, 3156, 3225, 3295,
-					3367, 3439, 3513, 3588, 3664, 3741, 3819, 3899, 3980, 4062,
-					4146, 4231, 4317, 4404, 4493, 4583, 4675, 4768, 4863, 4959,
-					5057, 5156, 5257, 5359, 5463, 5568, 5676, 5785, 5895, 6008,
-					6122, 6238, 6355, 6475, 6597, 6720, 6845, 6973, 7102, 7233,
-					7367, 7502, 7640, 7780, 7922, 8066, 8213, 8362, 8513, 8666,
-					8822, 8981, 9142, 9305, 9471, 9640, 9811, 9986, 10162,
-					10342, 10524, 10710, 10898, 11089, 11283, 11480, 11681,
-					11884, 12091, 12301, 12514, 12731, 12951, 13174, 13401,
-					13632, 13866, 14104, 14345, 14591, 14840, 15093, 15351,
-					15612, 15877, 16147, 16421, 16699, 16981, 17268, 17560,
-					17856, 18156, 18462, 18772, 19087, 19407, 19733, 20063,
-					20398, 20739, 21085, 21437, 21794, 22157, 22525, 22899,
-					23279, 23666, 24058, 24456, 24861, 25272, 25689, 26113,
-					26544, 26982, 27426, 27878, 28336, 28802, 29275, 29756,
-					30244, 30740, 31243, 31755, 32274, 32802, 33338, 33883,
-					34436, 34998, 35568, 36148, 36737, 37335, 37942, 38559,
-					39186, 39823, 40469, 41126, 41793, 42471, 43159, 43859,
-					44569, 45290, 46023, 46767, 47523, 48291, 49071, 49863,
-					50668, 51486, 52316, 53159, 54016, 54886, 55770, 56668,
-					57580, 58506, 59447, 60403, 61373, 62359, 63361, 64378,
-					65412 };
-			for (int i = 0; i < 3; i++)
-				proxNormalized[i] = (exp[proxNormalized[i]] + 128) >> 8;
-
-			SharedPreferences.Editor editor = PreferenceManager
-					.getDefaultSharedPreferences(this).edit();
-			int color = (proxNormalized[0] << 16) | (proxNormalized[1] << 8)
-					| proxNormalized[2];
-			editor.putInt(Preferences.PREF_COLOR_SENSOR, color);
-			editor.commit();
-		}
-	}
-
-	private void handleLockCommand(byte[] lockedBytes) {
-		if (gLogPackets)
-			Log.i(ADK.TAG,
-					"lockBytes: "
-							+ Utilities.dumpBytes(lockedBytes,
-									lockedBytes.length));
-		if (lockedBytes.length > 0 && lockedBytes[0] != 1) {
-			mIgnorePrefChanges = true;
-			SharedPreferences.Editor editor = PreferenceManager
-					.getDefaultSharedPreferences(this).edit();
-			editor.putBoolean(Preferences.PREF_LOCKED, lockedBytes[0] == 2);
-			editor.commit();
-			mIgnorePrefChanges = false;
-		}
-	}
+	// private void handleGetSensorsCommand(byte[] sensorBytes) {
+	// if (gLogPackets)
+	// Log.i(ADK.TAG,
+	// "handleGetSensorsCommand: "
+	// + Utilities.dumpBytes(sensorBytes,
+	// sensorBytes.length));
+	// if (sensorBytes.length > 23) {
+	// int sensorValues[] = Utilities.byteArrayToIntArray(sensorBytes);
+	// int proxNormalized[] = {
+	// sensorValues[20] | (sensorValues[21] << 8),
+	// sensorValues[22] | (sensorValues[23] << 8),
+	// sensorValues[24] | (sensorValues[25] << 8) };
+	// proxNormalized[2] *= 3;
+	// // find max
+	// int proxMax = 0;
+	// for (int i = 0; i < 3; i++)
+	// if (proxMax < proxNormalized[i])
+	// proxMax = proxNormalized[i];
+	// proxMax++;
+	// // normalize to 8-bits
+	// for (int i = 0; i < 3; i++)
+	// proxNormalized[i] = (proxNormalized[i] << 8) / proxMax;
+	// final int exp[] = { 0, 19, 39, 59, 79, 100, 121, 143, 165, 187,
+	// 209, 232, 255, 279, 303, 327, 352, 377, 402, 428, 454, 481,
+	// 508, 536, 564, 592, 621, 650, 680, 710, 741, 772, 804, 836,
+	// 869, 902, 936, 970, 1005, 1040, 1076, 1113, 1150, 1187,
+	// 1226, 1264, 1304, 1344, 1385, 1426, 1468, 1511, 1554, 1598,
+	// 1643, 1688, 1734, 1781, 1829, 1877, 1926, 1976, 2026, 2078,
+	// 2130, 2183, 2237, 2292, 2348, 2404, 2461, 2520, 2579, 2639,
+	// 2700, 2762, 2825, 2889, 2954, 3020, 3088, 3156, 3225, 3295,
+	// 3367, 3439, 3513, 3588, 3664, 3741, 3819, 3899, 3980, 4062,
+	// 4146, 4231, 4317, 4404, 4493, 4583, 4675, 4768, 4863, 4959,
+	// 5057, 5156, 5257, 5359, 5463, 5568, 5676, 5785, 5895, 6008,
+	// 6122, 6238, 6355, 6475, 6597, 6720, 6845, 6973, 7102, 7233,
+	// 7367, 7502, 7640, 7780, 7922, 8066, 8213, 8362, 8513, 8666,
+	// 8822, 8981, 9142, 9305, 9471, 9640, 9811, 9986, 10162,
+	// 10342, 10524, 10710, 10898, 11089, 11283, 11480, 11681,
+	// 11884, 12091, 12301, 12514, 12731, 12951, 13174, 13401,
+	// 13632, 13866, 14104, 14345, 14591, 14840, 15093, 15351,
+	// 15612, 15877, 16147, 16421, 16699, 16981, 17268, 17560,
+	// 17856, 18156, 18462, 18772, 19087, 19407, 19733, 20063,
+	// 20398, 20739, 21085, 21437, 21794, 22157, 22525, 22899,
+	// 23279, 23666, 24058, 24456, 24861, 25272, 25689, 26113,
+	// 26544, 26982, 27426, 27878, 28336, 28802, 29275, 29756,
+	// 30244, 30740, 31243, 31755, 32274, 32802, 33338, 33883,
+	// 34436, 34998, 35568, 36148, 36737, 37335, 37942, 38559,
+	// 39186, 39823, 40469, 41126, 41793, 42471, 43159, 43859,
+	// 44569, 45290, 46023, 46767, 47523, 48291, 49071, 49863,
+	// 50668, 51486, 52316, 53159, 54016, 54886, 55770, 56668,
+	// 57580, 58506, 59447, 60403, 61373, 62359, 63361, 64378,
+	// 65412 };
+	// for (int i = 0; i < 3; i++)
+	// proxNormalized[i] = (exp[proxNormalized[i]] + 128) >> 8;
+	//
+	// SharedPreferences.Editor editor = PreferenceManager
+	// .getDefaultSharedPreferences(this).edit();
+	// int color = (proxNormalized[0] << 16) | (proxNormalized[1] << 8)
+	// | proxNormalized[2];
+	// editor.putInt(Preferences.PREF_COLOR_SENSOR, color);
+	// editor.commit();
+	// }
+	// }
 
 	public boolean handleMessage(Message msg) {
 		if (msg.getTarget() == mDeviceHandler) {
-			return handleDeviceMethod(msg);
+			// return handleDeviceMethod(msg);
+			return true;
 		} else {
 			pollSettings();
 			return true;
 		}
 	}
 
-	private boolean handleDeviceMethod(Message msg) {
-		switch (msg.what) {
-		case CMD_SETTINGS:
-			handleSettingsCommand((byte[]) msg.obj);
-			return true;
-		case CMD_BT_NAME:
-			handleBtNameCommand((byte[]) msg.obj);
-		case CMD_GET_LICENSE:
-			handleLicenseTextCommand((byte[]) msg.obj);
-			return true;
-		case CMD_FILE_LIST:
-			handleFileListCommand((byte[]) msg.obj);
-			return true;
-		case CMD_ALARM_FILE:
-			handleAlarmFileCommand((byte[]) msg.obj);
-			return true;
-		case CMD_GET_SENSORS:
-			handleGetSensorsCommand((byte[]) msg.obj);
-			return true;
-		case CMD_LOCK:
-			handleLockCommand((byte[]) msg.obj);
-			return true;
-		}
-		return false;
-	}
-
 	public Object getAccessory() {
 		return mAccessory;
 	}
 
-	private void updateLockDisplay() {
-//		boolean isLocked = mPreferences.getBoolean(Preferences.PREF_LOCKED,
-//				false);
-//		setUpButton(R.id.lock_button, isLocked ? R.drawable.ic_lock
-//				: R.drawable.ic_unlock, isLocked ? R.string.locked
-//				: R.string.unlocked);
-	}
-
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-			String key) {
-
-		if (Preferences.PREF_LOCKED.equals(key)) {
-			updateLockDisplay();
-		}
-
-		if (mIgnorePrefChanges) {
-			return;
-		}
-
-		if (gLogPackets)
-			Log.d(ADK.TAG, "changed: " + key);
-
-		if (Utilities.indexOf(Preferences.SETTINGS_PREFERENCES, key) != -1) {
-			if (gLogPackets)
-				Log.d(ADK.TAG, "updating settings");
-			updateSettings(sharedPreferences);
-		} else if (Preferences.PREF_TIME.equals(key)) {
-			updateTime(sharedPreferences);
-		} else if (Preferences.PREF_DISPLAY.equals(key)) {
-			updateDisplay(sharedPreferences);
-		} else if (Preferences.PREF_LOCKED.equals(key)) {
-			updateLocked(sharedPreferences);
-		} else if (Preferences.PREF_ALARM_SOUND.equals(key)) {
-			updateAlarmSound(sharedPreferences);
-		}
-	}
-
-	private void updateSettings(SharedPreferences sharedPreferences) {
-		mIgnoreUpdatesUntil = System.currentTimeMillis() + 1000;
-		int color = sharedPreferences.getInt(Preferences.PREF_COLOR,
-				Preferences.PREF_DEFAULT_COLOR);
-		byte[] payload = mSettingsPayload;
-		int alarmTimeValue = sharedPreferences.getInt(
-				Preferences.PREF_ALARM_TIME, Preferences.DEFAULT_ALARM_TIME);
-		payload[0] = (byte) (alarmTimeValue / 60);
-		payload[1] = (byte) (alarmTimeValue % 60);
-		boolean alarmOn = sharedPreferences.getBoolean(
-				Preferences.PREF_ALARM_ON, false);
-		payload[2] = (byte) (alarmOn ? 1 : 0);
-		int brightness = sharedPreferences.getInt(Preferences.PREF_BRIGHTNESS,
-				255);
-		payload[3] = (byte) brightness;
-		payload[4] = (byte) (((color >> 16) & 0xff));
-		payload[5] = (byte) (((color >> 8) & 0xff));
-		payload[6] = (byte) ((color & 0xff));
-		int volume = sharedPreferences.getInt(Preferences.PREF_VOLUME, 128);
-		payload[7] = (byte) volume;
-		mSettingsBuffer = sendCommand(CMD_SETTINGS, CMD_SETTINGS, payload,
-				mSettingsBuffer);
-	}
-
-	private void updateTime(SharedPreferences sharedPreferences) {
-		int timeValue = sharedPreferences.getInt(Preferences.PREF_TIME, 0);
-		byte[] payload = new byte[7];
-		payload[0] = 0;
-		payload[1] = 0;
-		payload[2] = 0;
-		payload[3] = 0;
-		payload[4] = (byte) (timeValue / 60);
-		payload[5] = (byte) (timeValue % 60);
-		payload[6] = 0;
-		sendCommand(CMD_TIME, CMD_TIME, payload);
-	}
-
-	private void updateDisplay(SharedPreferences sharedPreferences) {
-		int displayValue = sharedPreferences
-				.getInt(Preferences.PREF_DISPLAY, 0);
-		byte[] payload = new byte[1];
-		payload[0] = (byte) displayValue;
-		sendCommand(CMD_DISPLAY_MODE, CMD_DISPLAY_MODE, payload);
-	}
-
-	private void updateLocked(SharedPreferences sharedPreferences) {
-		boolean isLocked = sharedPreferences.getBoolean(
-				Preferences.PREF_LOCKED, false);
-		Log.i(ADK.TAG, "updating locked " + isLocked);
-		byte[] payload = new byte[1];
-		payload[0] = (byte) (isLocked ? 2 : 0);
-		sendCommand(CMD_LOCK, CMD_LOCK, payload);
-	}
-
-	private void updateAlarmSound(SharedPreferences sharedPreferences) {
-		String alarmSound = TUNES_FOLDER + "/"
-				+ sharedPreferences.getString(Preferences.PREF_ALARM_SOUND, "");
-		final int alarmSoundLength = alarmSound.length();
-		if (alarmSoundLength > 0) {
-			byte[] payload = new byte[alarmSoundLength + 1];
-			alarmSound.getBytes(0, alarmSoundLength, payload, 0);
-			payload[alarmSoundLength] = (byte) 0;
-			sendCommand(CMD_ALARM_FILE, CMD_ALARM_FILE, payload);
-		}
-	}
+	// private void updateSettings(SharedPreferences sharedPreferences) {
+	// mIgnoreUpdatesUntil = System.currentTimeMillis() + 1000;
+	// int color = sharedPreferences.getInt(Preferences.PREF_COLOR,
+	// Preferences.PREF_DEFAULT_COLOR);
+	// byte[] payload = mSettingsPayload;
+	// int alarmTimeValue = sharedPreferences.getInt(
+	// Preferences.PREF_ALARM_TIME, Preferences.DEFAULT_ALARM_TIME);
+	// payload[0] = (byte) (alarmTimeValue / 60);
+	// payload[1] = (byte) (alarmTimeValue % 60);
+	// boolean alarmOn = sharedPreferences.getBoolean(
+	// Preferences.PREF_ALARM_ON, false);
+	// payload[2] = (byte) (alarmOn ? 1 : 0);
+	// int brightness = sharedPreferences.getInt(Preferences.PREF_BRIGHTNESS,
+	// 255);
+	// payload[3] = (byte) brightness;
+	// payload[4] = (byte) (((color >> 16) & 0xff));
+	// payload[5] = (byte) (((color >> 8) & 0xff));
+	// payload[6] = (byte) ((color & 0xff));
+	// int volume = sharedPreferences.getInt(Preferences.PREF_VOLUME, 128);
+	// payload[7] = (byte) volume;
+	// mSettingsBuffer = sendCommand(CMD_SETTINGS, CMD_SETTINGS, payload,
+	// mSettingsBuffer);
+	// }
 
 	private static class ProtocolHandler {
 		InputStream mInputStream;
@@ -933,8 +610,10 @@ public class HomeActivity extends Activity implements OnClickListener,
 
 		boolean isValidOpCode(int opCodeWithReplyBitSet) {
 			if ((opCodeWithReplyBitSet & 0x80) != 0) {
-				int opCode = opCodeWithReplyBitSet & 0x7f;
-				return ((opCode >= CMD_GET_PROTO_VERSION) && (opCode <= CMD_LOCK));
+				// int opCode = opCodeWithReplyBitSet & 0x7f;
+				// return ((opCode >= CMD_GET_PROTO_VERSION) && (opCode <=
+				// CMD_LOCK));
+				return true;
 			}
 			return false;
 		}
@@ -944,10 +623,5 @@ public class HomeActivity extends Activity implements OnClickListener,
 					replyBuffer);
 			mHandler.sendMessage(msg);
 		}
-	}
-
-	public String[] getAlarmSounds() {
-		String[] r = new String[mSoundFiles.size()];
-		return mSoundFiles.toArray(r);
 	}
 }
