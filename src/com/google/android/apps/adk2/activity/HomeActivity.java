@@ -67,15 +67,15 @@ public class HomeActivity extends Activity implements OnClickListener,
 	private Handler mSettingsPollingHandler;
 
 	private UsbManager mUSBManager;
-	private SharedPreferences mPreferences;
+	// private SharedPreferences mPreferences;
 	// private Button mBluetoothButton;
 
 	private ByteArrayOutputStream mLicenseTextStream;
 
 	private byte[] mSettingsBuffer = null;
 	private byte[] mSettingsPayload = new byte[8];
-	private byte[] mQueryBuffer = new byte[4];
-	private byte[] mEmptyPayload = new byte[0];
+//	private byte[] mQueryBuffer = new byte[4];
+//	private byte[] mEmptyPayload = new byte[0];
 
 	Connection mConnection;
 
@@ -122,7 +122,7 @@ public class HomeActivity extends Activity implements OnClickListener,
 	static final byte CMD_DISPLAY_MODE = 15; // () -> (u8) OR (u8) -> ()
 	static final byte CMD_LOCK = 16; // () -> (u8) OR (u8) -> ()
 
-	private static final boolean gLogPackets = false;
+	private static final boolean gLogPackets = true;
 
 	static final int DIALOG_NO_PRESETS_ID = 0;
 
@@ -195,35 +195,35 @@ public class HomeActivity extends Activity implements OnClickListener,
 		return dialog;
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-//		case R.id.license_menu:
-//			showLicenses();
-//			return true;
+//	@Override
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//		switch (item.getItemId()) {
+////		case R.id.license_menu:
+////			showLicenses();
+////			return true;
+////
+////		case R.id.disconnect_menu:
+////			disconnect();
+////			return true;
+////
+////		case R.id.change_bt_name:
+////			changeBtName();
+////			return true;
 //
-//		case R.id.disconnect_menu:
-//			disconnect();
-//			return true;
-//
-//		case R.id.change_bt_name:
-//			changeBtName();
-//			return true;
-
-		default:
-			return false;
-		}
-	}
+//		default:
+//			return false;
+//		}
+//	}
 
 	private void disconnect() {
 		finish();
 	}
 
-	private void startLicenseUpload() {
-		Log.i(ADK.TAG, "startLicenseUpload");
-		mLicenseTextStream = new ByteArrayOutputStream();
-		sendCommand(CMD_GET_LICENSE, 33);
-	}
+//	private void startLicenseUpload() {
+//		Log.i(ADK.TAG, "startLicenseUpload");
+//		mLicenseTextStream = new ByteArrayOutputStream();
+//		sendCommand(CMD_GET_LICENSE, 33);
+//	}
 
 	private void pollSettings() {
 		if (mPollSettings) {
@@ -266,21 +266,21 @@ public class HomeActivity extends Activity implements OnClickListener,
 		// switch (v.getId()) {
 	}
 
-	private void toggleLock() {
-		boolean isLocked = mPreferences.getBoolean(Preferences.PREF_LOCKED,
-				false);
-		boolean newLocked = !isLocked;
-		SharedPreferences.Editor editor = mPreferences.edit();
-		editor.putBoolean(Preferences.PREF_LOCKED, newLocked);
-		editor.commit();
-	}
+//	private void toggleLock() {
+//		boolean isLocked = mPreferences.getBoolean(Preferences.PREF_LOCKED,
+//				false);
+//		boolean newLocked = !isLocked;
+//		SharedPreferences.Editor editor = mPreferences.edit();
+//		editor.putBoolean(Preferences.PREF_LOCKED, newLocked);
+//		editor.commit();
+//	}
 
-	private void setUpButton(int buttonID, int iconID, int labelID) {
-		View button = findViewById(buttonID);
-		button.setOnClickListener(this);
-		((ImageView) button.findViewById(R.id.icon)).setImageResource(iconID);
-		((TextView) button.findViewById(R.id.label)).setText(labelID);
-	}
+//	private void setUpButton(int buttonID, int iconID, int labelID) {
+//		View button = findViewById(buttonID);
+//		button.setOnClickListener(this);
+//		((ImageView) button.findViewById(R.id.icon)).setImageResource(iconID);
+//		((TextView) button.findViewById(R.id.label)).setText(labelID);
+//	}
 
 	public void connectToAccessory() {
 		// bail out if we're already connected
@@ -327,10 +327,85 @@ public class HomeActivity extends Activity implements OnClickListener,
 	}
 
 	private void performPostConnectionTasks() {
-		// sendCommand(CMD_GET_PROTO_VERSION, CMD_GET_PROTO_VERSION);
-		// sendCommand(CMD_SETTINGS, CMD_SETTINGS);
-		// sendCommand(CMD_BT_NAME, CMD_BT_NAME);
-		// sendCommand(CMD_ALARM_FILE, CMD_ALARM_FILE);
+		byte[] buffer = new byte[100];
+		buffer[0] = (byte)((int)1 & 0xFF);
+		buffer[1] = (byte)((int)2 & 0xFF);
+		buffer[2] = (byte)((int)3 & 0xFF);
+		buffer[3] = (byte)((int)4 & 0xFF);
+		buffer[4] = (byte)((int)5 & 0xFF);
+		buffer[5] = (byte)((int)6 & 0xFF);
+		buffer[6] = (byte)((int)7 & 0xFF);
+		buffer[7] = (byte)((int)8 & 0xFF);
+		buffer[8] = (byte)((int)9 & 0xFF);
+		buffer[9] = (byte)((int)10 & 0xFF);
+
+		try{
+			mConnection.getOutputStream().write(buffer, 0, 10);
+		}
+		catch(IOException e)
+		{
+			
+		}		
+		
+		buffer[10] = (byte)((int)1 & 0xFF);
+		buffer[11] = (byte)((int)2 & 0xFF);
+		buffer[12] = (byte)((int)3 & 0xFF);
+		buffer[13] = (byte)((int)4 & 0xFF);
+		buffer[14] = (byte)((int)5 & 0xFF);
+		buffer[15] = (byte)((int)6 & 0xFF);
+		buffer[16] = (byte)((int)7 & 0xFF);
+		buffer[17] = (byte)((int)8 & 0xFF);
+		buffer[18] = (byte)((int)9 & 0xFF);
+		buffer[19] = (byte)((int)10 & 0xFF);
+		
+		try{
+			mConnection.getOutputStream().write(buffer, 10, 10);
+		}
+		catch(IOException e)
+		{
+			
+		}		
+		
+		buffer[20] = (byte)11;
+		buffer[21] = (byte)12;
+		buffer[22] = (byte)13;
+		buffer[23] = (byte)14;
+		buffer[24] = (byte)15;
+		buffer[25] = (byte)16;
+		buffer[26] = (byte)17;
+		buffer[27] = (byte)18;
+		buffer[28] = (byte)19;
+		buffer[29] = (byte)20;
+		
+		try{
+			mConnection.getOutputStream().write(buffer, 20, 10);
+		}
+		catch(IOException e)
+		{
+			
+		}
+		
+		int i;
+		
+		for (i = 0; i < 100; i++)
+		{
+			buffer[i] = (byte)i;
+		}
+		try{
+			mConnection.getOutputStream().write(buffer, 10, 32);
+			mConnection.getOutputStream().write(buffer, 12, 32);
+			mConnection.getOutputStream().write(buffer, 14, 32);
+			mConnection.getOutputStream().write(buffer, 16, 32);
+			mConnection.getOutputStream().write(buffer, 18, 32);
+		}
+		catch(IOException e)
+		{
+			
+		}
+//		 sendCommand(CMD_GET_PROTO_VERSION, CMD_GET_PROTO_VERSION);
+//		 sendCommand(CMD_SETTINGS, CMD_SETTINGS);
+//		 sendCommand(CMD_BT_NAME, CMD_BT_NAME);
+//		 sendCommand(CMD_ALARM_FILE, CMD_ALARM_FILE);
 		// listDirectory(TUNES_FOLDER);
 
 		// Thread thread = new Thread(null, this, "ADK 2012");
@@ -438,7 +513,7 @@ public class HomeActivity extends Activity implements OnClickListener,
 	}
 
 	private void sendCommand(int command, int sequence) {
-		sendCommand(command, sequence, mEmptyPayload, mQueryBuffer);
+		// sendCommand(command, sequence, mEmptyPayload, mQueryBuffer);
 	}
 
 	private void handleBtNameCommand(byte[] settingsBytes) {
