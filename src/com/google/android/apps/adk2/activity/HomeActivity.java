@@ -15,75 +15,67 @@
  */
 package com.google.android.apps.adk2.activity;
 
-import java.io.BufferedReader;
-// import java.io.ByteArrayInputStream;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-// import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.Context; /* new */
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-//import android.content.Intent;
-//import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.ParcelFileDescriptor;
-import android.os.Handler.Callback;
-import android.os.Message;
-// import android.preference.PreferenceManager;
+import android.text.format.DateFormat;
 import android.util.Log;
-//import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-//import android.widget.Button;
+import android.widget.Button;
 //import android.widget.EditText;
 //import android.widget.ImageView;
 //import android.widget.TextView;
 
-// import com.android.future.usb.UsbAccessory;
 import android.hardware.usb.UsbAccessory;
-// import com.android.future.usb.UsbManager;
 import android.hardware.usb.UsbManager;
 
-import com.google.android.apps.adk2.ADK;
 import com.google.android.apps.adk2.R;
-import com.google.android.apps.adk2.Utilities;
 
-public class HomeActivity extends Activity implements OnClickListener,
-		Callback, Runnable {
+public class HomeActivity extends Activity implements OnClickListener, Runnable {
 
-	private Handler mDeviceHandler;
-	private Handler mSettingsPollingHandler;
-	private UsbManager mUSBManager;
-	private UsbAccessory mAccessory;
-
-	private FileInputStream mInputStream;
-	private FileOutputStream mOutputStream;
-	private ParcelFileDescriptor mFileDescriptor;
-
-	private StreamReaderThread mReaderThread;
-	private StreamWriterThread mWriterThread;
-
-	private Object mReaderStartSync;
-	private Object mWriterStartSync;
-
-	private boolean mPollSettings = false;
-
+	private static final String TAG = "ADK_2012";
 	private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";
 
-	private static final boolean gLogPackets = true;
+	/**
+	 * The following two object have different life cycles.
+	 * 
+	 * mAccessory represents if an Accessory (usb host) connected.
+	 * mFileDescriptor represents if file descriptor opened, aka, a connection
+	 * established.
+	 * 
+	 * The former can be safely left alone when process/main thread killed. The
+	 * latter must be closed properly otherwise a usb reset is required, which
+	 * can only be performed from MCU side.
+	 */
+	private UsbAccessory mAccessory;
+	private ParcelFileDescriptor mFileDescriptor;
 
-	static final int DIALOG_NO_PRESETS_ID = 0;
+	/**
+	 * For command/response thread
+	 */
+	private String mCommand;
+	private String mResponse;
+	
+	private Button mButton1;
 
-	private static HomeActivity sHomeActivity = null;
-
+	/**
+	 * Only DETACH intent can be received via Broadcast receiver. ATTACH intent
+	 * can only be received by system launcher or onNewIntent if the activity is
+	 * alive, either foreground or background.
+	 * 
+	 * BroadcastReceiver should be registered when Accessory found and
+	 * unregistered when Accessory disconnected.
+	 */
 	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -93,41 +85,85 @@ public class HomeActivity extends Activity implements OnClickListener,
 				UsbAccessory accessory = (UsbAccessory) intent
 						.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
 				if (accessory != null && accessory.equals(mAccessory)) {
-					Log.i(ADK.TAG, "Accessory Detached");
+					Log.i(TAG, "Accessory Detached");
 					closeAccessory();
+					unregisterDetachReceiver();
+					mAccessory = null;
 				}
 			}
 		}
 	};
 
-	public static HomeActivity get() {
-		return sHomeActivity;
+	/**
+	 * register broadcast receiver
+	 */
+	private void registerDetachReceiver() {
+		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
+		registerReceiver(mUsbReceiver, filter);
 	}
 
-	public boolean startPollingSettings() {
-		boolean wasPolling = mPollSettings;
-		mPollSettings = true;
-		if (!wasPolling) {
-			pollSettings();
+	/**
+	 * unregister broadcast receiver
+	 */
+	private void unregisterDetachReceiver() {
+		unregisterReceiver(mUsbReceiver);
+	}
+
+	/**
+	 * get system usb manager, no need to hold a reference in this class
+	 * 
+	 * @return
+	 */
+	private UsbManager getUsbManager() {
+		return (UsbManager) getSystemService(Context.USB_SERVICE);
+	}
+
+	/**
+	 * request Accessory, query system usb manager and make sure we have the
+	 * permission to access it.
+	 * 
+	 * @return
+	 */
+	private UsbAccessory requestAccessory() {
+		UsbAccessory[] accessories = getUsbManager().getAccessoryList();
+		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
+		if (accessory != null) {
+			if (getUsbManager().hasPermission(accessory)) {
+				return accessory;
+			} else {
+				Log.i(TAG, "requestAccessory: Permission failed");
+				return null;
+			}
+		} else {
+			Log.i(TAG, "requestAccessory: Accessory not found");
+			return null;
 		}
-		return wasPolling;
-	}
-
-	public void stopPollingSettings() {
-		mPollSettings = false;
 	}
 
 	@Override
 	protected void onNewIntent(Intent intent) {
 
-		Log.i(ADK.TAG, "onNewIntent, new intent received");
+		Log.i(TAG, "- onNewIntent");
 
 		String action = intent.getAction();
 		if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(action)) {
+			/*
+			 * When this happens, it means the previous stream are invalid.
+			 */
+			if (mAccessory != null) {
+				if (mFileDescriptor != null) {
+					closeAccessory();
+				}
+			}
+
+			mAccessory = null;
+
 			UsbAccessory accessory = (UsbAccessory) intent
 					.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
 			if (accessory != null) {
-				openAccessory(accessory);
+				mAccessory = accessory;
+				openAccessory();
 			}
 		}
 	}
@@ -136,329 +172,181 @@ public class HomeActivity extends Activity implements OnClickListener,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Log.i(ADK.TAG, "");
-		Log.i(ADK.TAG, "");
-		Log.i(ADK.TAG, "");
-		Log.i(ADK.TAG, "-----------------------------------------");
-		Log.i(ADK.TAG, "HomeActivity OnCreate");
-		Log.i(ADK.TAG, "-----------------------------------------");
-
-		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
-		registerReceiver(mUsbReceiver, filter);
+		Log.i(TAG, ".");
+		Log.i(TAG, ".");
+		Log.i(TAG, ".");
+		Log.i(TAG,
+				"HomeActivity OnCreate @ "
+						+ DateFormat.format("yyyy-MM-dd kk:mm:ss",
+								System.currentTimeMillis()));
 
 		setContentView(R.layout.home);
-		// setContentView(R.layout.connect);
-		// mBluetoothButton = (Button)
-		// findViewById(R.id.connect_bluetooth_button);
-		// mBluetoothButton.setOnClickListener(this);
+		mButton1 = (Button)findViewById(R.id.button1);
+		mButton1.setOnClickListener(this);
 
-		mDeviceHandler = new Handler(this);
-		mSettingsPollingHandler = new Handler(this);
-
-		mUSBManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-		mReaderStartSync = new Object();
-
-		mReaderThread = new StreamReaderThread();
-
-		sHomeActivity = this;
-
-		connectToAccessory();
-
-		startPollingSettings();
-	}
-
-	// private void disconnect() {
-	// finish();
-	// }
-
-	private void pollSettings() {
-		if (mPollSettings) {
-			// sendCommand(CMD_SETTINGS, CMD_SETTINGS);
-			// sendCommand(CMD_DISPLAY_MODE, CMD_DISPLAY_MODE);
-			// sendCommand(CMD_LOCK, CMD_LOCK);
-			Message msg = mSettingsPollingHandler.obtainMessage(99);
-			if (!mSettingsPollingHandler.sendMessageDelayed(msg, 500)) {
-				Log.e(ADK.TAG, "failed to queue settings message");
-			}
+		mAccessory = requestAccessory();
+		if (mAccessory != null) {
+			registerDetachReceiver();
 		}
 	}
 
 	@Override
+	protected void onStart() {
+		Log.i(TAG, "- onStart");
+		super.onStart();
+		openAccessory();
+	}
+
+	@Override
+	protected void onRestart() {
+		Log.i(TAG, "- onRestart");
+		super.onRestart();
+	}
+
+	@Override
 	public void onPause() {
+		Log.i(TAG, "- onPause");
 		super.onPause();
 	}
 
 	@Override
 	public void onResume() {
+		Log.i(TAG, "- onResume");
 		super.onResume();
-		pollSettings();
+		doCommand("hello");
 	}
 
 	@Override
 	public void onStop() {
+		Log.i(TAG, "- onStop");
 		super.onStop();
+		closeAccessory();
 	}
 
 	@Override
 	public void onDestroy() {
-		sHomeActivity = null;
-		closeAccessory();
-
-		unregisterReceiver(mUsbReceiver);
+		Log.i(TAG, "- onDestroy");
 		super.onDestroy();
 	}
 
 	public void onClick(View v) {
-		// switch (v.getId())
+		switch (v.getId()) {
+		case R.id.button1:
+			doCommand("Example");
+			break;
+		}
 	}
 
-	public void connectToAccessory() {
-		// bail out if we're already connected
-		if (mAccessory != null) {
-			Log.i(ADK.TAG,
-					"connectToAccessory, mAccessory not null.");
+	/**
+	 * Open Accessory actually open file descriptor, establish a connection. In
+	 * framework, /dev/usb_accessory will be opened.
+	 */
+	private void openAccessory() {
+		
+		if (mAccessory == null)
+			return;
+
+		mFileDescriptor = getUsbManager().openAccessory(mAccessory);
+
+		if (mFileDescriptor != null) {
+			Log.i(TAG, "openAccessory success");
+		} else {
+			Log.i(TAG, "!!! openAccessory fail");
+		}
+	}
+
+	/**
+	 * Close open file descriptor for usb accessory. This function is crucial
+	 * for maintaining robust connection. Failing to call this function before
+	 * application exit (including low mem kill) will result in failure in
+	 * subsequent reopen. No way to recover without usb reset or system reboot.
+	 */
+	private void closeAccessory() {
+
+		if (mFileDescriptor != null) {
+			try {
+				mFileDescriptor.close();
+				Log.i(TAG, "closeAccessory success");
+			} catch (IOException e) {
+				Log.i(TAG, "!!! mFileDescriptor closed with IOException, "
+						+ e.getClass().toString() + ", " + e.getMessage());
+			} finally {
+				mFileDescriptor = null;
+			}
+		}
+	}
+
+	/**
+	 * The write-read pattern to communicate. If write or read is blocked, the
+	 * communication dies and no way to recover.
+	 */
+	public void run() {
+
+		int read;
+		byte[] buf = new byte[256];
+
+		if (mFileDescriptor == null) {
+			Log.i(TAG, "+++ invalid mFileDescritor");
 			return;
 		}
 
-		UsbAccessory[] accessories = mUSBManager.getAccessoryList();
-		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
-		if (accessory != null) {
-			if (mUSBManager.hasPermission(accessory)) {
-				openAccessory(accessory);
-			} else {
-				Log.i(ADK.TAG, "connectToAccessory: Permission failed");
-				// synchronized (mUsbReceiver) {
-				// if (!mPermissionRequestPending) {
-				// mUsbManager.requestPermission(accessory,
-				// mPermissionIntent);
-				// mPermissionRequestPending = true;
-				// }
-				// }
+		FileDescriptor fd = mFileDescriptor.getFileDescriptor();
+		FileInputStream is = new FileInputStream(fd);
+		FileOutputStream os = new FileOutputStream(fd);
+
+		try {
+			Log.i(TAG, "+++ output stream write()");
+			os.write(mCommand.getBytes());
+			Log.i(TAG, "+++ input stream read()");
+			read = is.read(buf);
+
+			if (read > 0) {
+				mResponse = new String(buf, 0, read);
+				Log.i(TAG, "+++ input stream read() returns " + mResponse);
+			} else if (read == 0) {
+				Log.i(TAG, "+++ input stream read() returns zero byte");
+			} else if (read == -1) {
+				Log.i(TAG, "+++ input stream read() returns end-of-file");
 			}
-		} else {
-			Log.i(ADK.TAG, "connectToAccessory: Accessory is null");
-		}
-	}
-
-	public void disconnectFromAccessory() {
-		closeAccessory();
-	}
-
-	private void performPostConnectionTasks() {
-
-		if (!mReaderThread.isAlive()) {
-			mReaderThread.setInputStream(mInputStream);
-			mReaderThread.start();
-		}
-
-		timedWrite("hello\n");
-		timedWrite("world\n");
-	}
-
-	private void openAccessory(UsbAccessory accessory) {
-
-		mFileDescriptor = mUSBManager.openAccessory(accessory);
-
-		if (mFileDescriptor != null) {
-			mAccessory = accessory;
-
-			FileDescriptor fd = mFileDescriptor.getFileDescriptor();
-			mInputStream = new FileInputStream(fd);
-			mOutputStream = new FileOutputStream(fd);
-
-			performPostConnectionTasks();
-		}
-	}
-
-	private void closeAccessory() {
-
-		if (mInputStream != null) {
+		} catch (IOException e) {
+			Log.e(TAG, "+++ IOException", e);
+			return;
+		} finally {
 			try {
-				mInputStream.close();
+				is.close();
 			} catch (IOException e) {
-			} finally {
-				mInputStream = null;
 			}
-
-		}
-
-		if (mOutputStream != null) {
 			try {
-				mOutputStream.close();
+				os.close();
 			} catch (IOException e) {
-			} finally {
-				mOutputStream = null;
 			}
 		}
-
-		mAccessory = null;
 	}
 
-	public void run() {
+	/**
+	 * send command and get response
+	 * 
+	 * @param s
+	 *            command string
+	 */
+	private void doCommand(String s) {
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				mInputStream));
+		mCommand = null;
+		mResponse = null;
 
-		while (true) {
-			try {
-				String string = reader.readLine();
-				Message msg = mDeviceHandler.obtainMessage(0, string);
-				mDeviceHandler.sendMessage(msg);
-			} catch (IOException e) {
-				break;
-			}
-		}
-		;
-	}
+		if (s == null || s.length() == 0)
+			return;
 
-	public byte[] sendCommand(int command, int sequence, byte[] payload,
-			byte[] buffer) {
-		int bufferLength = payload.length + 4;
-		if (buffer == null || buffer.length < bufferLength) {
-			Log.i(ADK.TAG, "allocating new command buffer of length "
-					+ bufferLength);
-			buffer = new byte[bufferLength];
-		}
+		mCommand = s;
 
-		buffer[0] = (byte) command;
-		buffer[1] = (byte) sequence;
-		buffer[2] = (byte) (payload.length & 0xff);
-		buffer[3] = (byte) ((payload.length & 0xff00) >> 8);
-		if (payload.length > 0) {
-			System.arraycopy(payload, 0, buffer, 4, payload.length);
-		}
-		if (mOutputStream != null && buffer[1] != -1) {
-			try {
-				if (gLogPackets) {
-					Log.i(ADK.TAG,
-							"sendCommand: "
-									+ Utilities
-											.dumpBytes(buffer, buffer.length));
-				}
-				mOutputStream.write(buffer);
-			} catch (IOException e) {
-				Log.e(ADK.TAG, "accessory write failed", e);
-			}
-		}
-		return buffer;
-	}
-
-	public void sendCommand(int command, int sequence, byte[] payload) {
-		sendCommand(command, sequence, payload, null);
-	}
-
-	public boolean handleMessage(Message msg) {
-
-		if (msg.getTarget() == mDeviceHandler) {
-			// return handleDeviceMethod(msg);
-			return true;
-		} else {
-			pollSettings();
-			return true;
-		}
-	}
-
-	public Object getAccessory() {
-		return mAccessory;
-	}
-
-	public boolean timedWrite(String s) {
-
-		Object sync = new Object();
-		StreamWriterThread t = new StreamWriterThread(sync, mOutputStream, s);
+		Thread t = new Thread(this);
 		t.start();
 
-		synchronized (sync) {
-			try {
-				sync.wait(200);
-			} catch (InterruptedException e) {
-			}
+		while (t.isAlive()) {
 		}
 
-		if (t.done) {
-			return true;
-		} else {
-//			disconnectFromAccessory();
-//			try {
-//				Thread.sleep(100);
-//			} catch (InterruptedException e) {
-//			}
-//			connectToAccessory();
-			return false;
-		}
-	}
-
-	public class StreamWriterThread extends Thread {
-
-		Object mSync;
-		FileOutputStream mOutputStream;
-		String mString;
-		public boolean done;
-
-		public StreamWriterThread(Object sync, FileOutputStream o, String s) {
-			mSync = sync;
-			mOutputStream = o;
-			mString = s;
-			done = false;
-		}
-
-		@Override
-		public void run() {
-
-			try {
-				Log.i(ADK.TAG, "StreamWriter: start writing");
-				mOutputStream.write(mString.getBytes());
-				Log.i(ADK.TAG, "StreamWriter: writing done");
-			} catch (IOException e) {
-				Log.i(ADK.TAG, "StreamWriter: IOException "
-						+ e.getClass().toString());
-				return;
-			}
-
-			synchronized (mSync) {
-				done = true;
-				mSync.notify();
-			}
-		}
-	}
-
-	public class StreamReaderThread extends Thread {
-
-		FileInputStream mInputstream;
-		
-		byte[] buf = new byte[256];
-		int read;
-		
-		public void setInputStream(FileInputStream i) {
-			mInputStream = i;
-		}
-
-		@Override
-		public void run() {
-			
-			Log.i(ADK.TAG, "StreamReader: thread started");
-//			BufferedReader reader = new BufferedReader(new InputStreamReader(
-//					mInputStream));
-
-			try {
-				while (true) {
-					// Log.i(ADK.TAG, "StreamReader: start reading");
-					// String string = reader.readLine();
-					// read = mInputStream.read(buf);
-					read = mInputStream.read(buf);
-					Log.i(ADK.TAG, "StreamReader: read " + Integer.toString(read)
-							 + " byte(s): " + new String(buf, 0, read));
-					// Log.i(ADK.TAG, "StreamReader: line read, " + string);
-					// Message msg = mDeviceHandler.obtainMessage(0, string);
-					// mDeviceHandler.sendMessage(msg);
-				}
-			} catch (IOException e) {
-				// TODO print something
-				Log.i(ADK.TAG, "StreamReader: IOException, " + e.getMessage());
-			}
-			
-			Log.i(ADK.TAG, "StreamReader: thread stopped");
-		}
+		Log.i(TAG, "Command: " + s);
+		if (mResponse != null)
+			Log.i(TAG, "Response: " + mResponse);
 	}
 }
