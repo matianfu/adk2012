@@ -19,6 +19,7 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -27,15 +28,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
+import android.text.Editable;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ScrollView;
 //import android.widget.EditText;
 //import android.widget.ImageView;
-//import android.widget.TextView;
-
+import android.widget.TextView;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 
@@ -65,8 +67,17 @@ public class HomeActivity extends Activity implements OnClickListener, Runnable 
 	 */
 	private String mCommand;
 	private String mResponse;
-	
+
 	private Button mButton1;
+	private Button mButton2;
+	private Button mButton3;
+	private Button mButton4;
+	private Button mButton5;
+	private Button mButton6;
+
+	private TextView mLabel1;
+	private TextView mConsole1;
+	private int mConsoleLines = 0;
 
 	/**
 	 * Only DETACH intent can be received via Broadcast receiver. ATTACH intent
@@ -164,6 +175,7 @@ public class HomeActivity extends Activity implements OnClickListener, Runnable 
 			if (accessory != null) {
 				mAccessory = accessory;
 				openAccessory();
+				registerDetachReceiver();
 			}
 		}
 	}
@@ -181,8 +193,24 @@ public class HomeActivity extends Activity implements OnClickListener, Runnable 
 								System.currentTimeMillis()));
 
 		setContentView(R.layout.home);
-		mButton1 = (Button)findViewById(R.id.button1);
+		mButton1 = (Button) findViewById(R.id.button1);
 		mButton1.setOnClickListener(this);
+		mButton2 = (Button) findViewById(R.id.button2);
+		mButton2.setOnClickListener(this);
+		mButton3 = (Button) findViewById(R.id.button3);
+		mButton3.setOnClickListener(this);
+		mButton4 = (Button) findViewById(R.id.button4);
+		mButton4.setOnClickListener(this);
+		mButton5 = (Button) findViewById(R.id.button5);
+		mButton5.setOnClickListener(this);
+		mButton6 = (Button) findViewById(R.id.button6);
+		mButton6.setOnClickListener(this);
+
+		mLabel1 = (TextView) findViewById(R.id.label1);
+		mLabel1.setText("Disconnected");
+
+		mConsole1 = (TextView) findViewById(R.id.console1);
+		mConsole1.setSingleLine(false);
 
 		mAccessory = requestAccessory();
 		if (mAccessory != null) {
@@ -213,7 +241,7 @@ public class HomeActivity extends Activity implements OnClickListener, Runnable 
 	public void onResume() {
 		Log.i(TAG, "- onResume");
 		super.onResume();
-		doCommand("hello");
+		doCommand("PING");
 	}
 
 	@Override
@@ -232,7 +260,27 @@ public class HomeActivity extends Activity implements OnClickListener, Runnable 
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.button1:
-			doCommand("Example");
+			doCommand("PING");
+			break;
+
+		case R.id.button2:
+			doCommand("SCAN");
+			break;
+
+		case R.id.button3:
+			doCommand("CODE");
+			break;
+
+		case R.id.button4:
+			doCommand("BATVOL");
+			break;
+
+		case R.id.button5:
+			doCommand("BATCAP");
+			break;
+
+		case R.id.button6:
+			doCommand("BATPCT");
 			break;
 		}
 	}
@@ -242,13 +290,17 @@ public class HomeActivity extends Activity implements OnClickListener, Runnable 
 	 * framework, /dev/usb_accessory will be opened.
 	 */
 	private void openAccessory() {
-		
+
 		if (mAccessory == null)
 			return;
 
 		mFileDescriptor = getUsbManager().openAccessory(mAccessory);
 
 		if (mFileDescriptor != null) {
+			mLabel1.setText("Accessory Connected");
+			consolePuts("");
+			consolePuts("");
+			consolePuts("Connected");
 			Log.i(TAG, "openAccessory success");
 		} else {
 			Log.i(TAG, "!!! openAccessory fail");
@@ -266,6 +318,8 @@ public class HomeActivity extends Activity implements OnClickListener, Runnable 
 		if (mFileDescriptor != null) {
 			try {
 				mFileDescriptor.close();
+				mLabel1.setText("Accessory Disconnected");
+				consolePuts("Disconnected");	
 				Log.i(TAG, "closeAccessory success");
 			} catch (IOException e) {
 				Log.i(TAG, "!!! mFileDescriptor closed with IOException, "
@@ -331,6 +385,14 @@ public class HomeActivity extends Activity implements OnClickListener, Runnable 
 	 */
 	private void doCommand(String s) {
 
+		// not connected?
+		if (mFileDescriptor == null) {
+			consolePuts("<CMD> " + String.format("%-8s", s) + "    配件尚未连接");
+			Log.i(TAG, "<CMD> " + String.format("-%8s", s) + "    Accessory not connected."
+					+ mResponse);
+			return;
+		}
+
 		mCommand = null;
 		mResponse = null;
 
@@ -345,8 +407,25 @@ public class HomeActivity extends Activity implements OnClickListener, Runnable 
 		while (t.isAlive()) {
 		}
 
-		Log.i(TAG, "Command: " + s);
-		if (mResponse != null)
-			Log.i(TAG, "Response: " + mResponse);
+		consolePuts("<CMD> " + String.format("%-8s", mCommand) + "    <RSP> "
+				+ mResponse);
+		Log.i(TAG, "<CMD> " + String.format("%-8s", mCommand) + "    <RSP> "
+				+ mResponse);
+	}
+
+	private void consolePuts(String s) {
+		if (mConsoleLines >= 500) {
+			Editable edit = mConsole1.getEditableText();
+			edit.delete(0, edit.toString().indexOf('\n') + 1);
+		}
+
+		// mConsole1.append(s + Integer.toString(
+		// Calendar.getInstance().get(Calendar.SECOND) ) + "\n");
+		mConsole1.append(String.format("%04d : ", mConsoleLines));
+		mConsole1.append(s + "\n");
+		mConsoleLines++;
+		
+		ScrollView scroll = (ScrollView) findViewById(R.id.scroll1);
+		scroll.fullScroll(View.FOCUS_DOWN);
 	}
 }

@@ -6,30 +6,18 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="12"
+        android:minSdkVersion="14"
         android:targetSdkVersion="22" />
-
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    
 
     <uses-feature
         android:name="android.hardware.usb.accessory"
         android:required="true" />
 
     <application
-        android:hardwareAccelerated="true"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher_adk"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_short_name" >
-        <!-- <uses-library android:name="com.android.future.usb.accessory" />  -->
-
-        <activity
-            android:name=".activity.ConnectActivity"
-            android:label="@string/app_short_name"
-            android:screenOrientation="portrait" >
-        </activity>
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/app_short_name"
@@ -37,23 +25,9 @@
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
-            </intent-filter>
-            <meta-data
-                android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
-                android:resource="@xml/usb_accessory_filter" />
-                
-        </activity>
-        <!--
-        <activity
-            android:name="USBAccessoryActivity"
-            android:label="@string/app_long_name"
-            android:launchMode="singleInstance"
-            android:taskAffinity="" >
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
             </intent-filter>
@@ -62,7 +36,6 @@
                 android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
                 android:resource="@xml/usb_accessory_filter" />
         </activity>
-        -->
     </application>
 
 </manifest>
